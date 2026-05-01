@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+*.vsix
+dist/
+
+# Runtime scratch
+launch_tool/generated_file/
+launch_tool/script_py/preprocessingcopy.py
+
+# OS / editor
+.DS_Store
+**/.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local-only IDE state (keep .vscode/launch.json etc. that help contributors)
+.vscode/settings.json
+.vscode/.ropeproject
+.vscode-test/
+
+# Coverage / test outputs
+coverage/
+.nyc_output/
+
+# Source assets that don't ship in the .vsix
+images/R.png
+
+# Misc
+generated_code.zip
+Appendix.pdf
+code_test/
+img/

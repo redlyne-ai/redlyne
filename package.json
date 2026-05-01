@@ -1,0 +1,76 @@
+{
+  "name": "redlyne",
+  "displayName": "Redlyne",
+  "description": "Detect and patch vulnerabilities in AI-generated Python code (Windows + WSL only)",
+  "version": "0.0.1",
+  "publisher": "redlyne",
+  "license": "Apache-2.0",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redlyne-ai/redlyne.git"
+  },
+  "bugs": {
+    "url": "https://github.com/redlyne-ai/redlyne/issues"
+  },
+  "homepage": "https://redlyne.io",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "python",
+    "security",
+    "vulnerability",
+    "static analysis",
+    "AI code",
+    "patch",
+    "wsl"
+  ],
+  "os": [
+    "win32"
+  ],
+  "activationEvents": [
+    "onCommand:redlyne.runAnalysis"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "redlyne.runAnalysis",
+        "title": "Redlyne: Run Analysis",
+        "category": "Redlyne"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "redlyne.runAnalysis",
+          "when": "editorHasSelection && resourceLangId == python",
+          "group": "z_navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.89.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.3.9"
+  }
+}
