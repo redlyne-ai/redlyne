@@ -11,7 +11,7 @@
   [![Website](https://img.shields.io/badge/website-redlyne.io-red)](https://redlyne.io)
 
   [Website](https://redlyne.io) ·
-  [Marketplace](https://marketplace.visualstudio.com/items?itemName=redlyne.redlyne) ·
+  [Marketplace](https://marketplace.visualstudio.com/items?itemName=redlyne.redlyne-ai) ·
   [Issues](https://github.com/redlyne-ai/redlyne/issues) ·
   [Discussions](https://github.com/redlyne-ai/redlyne/discussions)
 </div>
