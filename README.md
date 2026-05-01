@@ -6,7 +6,7 @@
   **Detect and patch vulnerabilities in AI-generated Python code, directly from your editor.**
 
   [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
-  [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/redlyne.redlyne?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=redlyne.redlyne-ai)
+  [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/redlyne.redlyne-ai?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=redlyne.redlyne-ai)
   [![Platform](https://img.shields.io/badge/platform-Windows%20%2B%20WSL2-success)](#status)
   [![Website](https://img.shields.io/badge/website-redlyne.io-red)](https://redlyne.io)
 
@@ -49,7 +49,7 @@ From the VS Code Marketplace (recommended):
 From the command line:
 
 ```bash
-code --install-extension redlyne.redlyne
+code --install-extension redlyne.redlyne-ai
 ```
 
 From a `.vsix` (manual install):
@@ -108,6 +108,14 @@ Contributions of all sizes are welcome — bug reports, feature ideas, rule subm
 - Browse [open issues](https://github.com/redlyne-ai/redlyne/issues), especially those tagged `good first issue`
 - Join the discussion in [GitHub Discussions](https://github.com/redlyne-ai/redlyne/discussions)
 
+## Contact
+
+- **General inquiries / partnerships / press:** [info@redlyne.io](mailto:info@redlyne.io)
+- **Bugs and feature requests:** [GitHub Issues](https://github.com/redlyne-ai/redlyne/issues)
+- **Questions and ideas:** [GitHub Discussions](https://github.com/redlyne-ai/redlyne/discussions)
+- **Code of Conduct reports:** [conduct@redlyne.io](mailto:conduct@redlyne.io)
+- **Website:** [redlyne.io](https://redlyne.io)
+
 ## License
 
 Redlyne uses a **dual-license** model:
@@ -119,6 +127,6 @@ Redlyne uses a **dual-license** model:
 
 This separation keeps the engineering side fully open source — fork it, extend it, ship it commercially with attribution — while preserving the value of the curated rule set.
 
-For commercial licensing of the rules and datasets, partnership, or enterprise inquiries: **[redlyne.io](https://redlyne.io)**
+For commercial licensing of the rules and datasets, partnership, or enterprise inquiries: **[redlyne.io](https://redlyne.io)** · [info@redlyne.io](mailto:info@redlyne.io)
 
 The names "Redlyne" and the Redlyne logo are trademarks. See [NOTICE](NOTICE) for details.
