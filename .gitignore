@@ -37,3 +37,6 @@ generated_code.zip
 Appendix.pdf
 code_test/
 img/
+
+# Website lives in its own repo (redlyne-ai/website), nested here only locally
+website/

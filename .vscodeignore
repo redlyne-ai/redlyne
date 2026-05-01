@@ -23,3 +23,4 @@ README-DEV.md
 package-lock.json
 launch_tool/script_py/preprocessingcopy.py
 images/R.png
+website/**
