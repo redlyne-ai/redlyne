@@ -1,6 +1,6 @@
 {
-  "name": "redlyne",
-  "displayName": "Redlyne",
+  "name": "redlyne-ai",
+  "displayName": "Redlyne AI",
   "description": "Detect and patch vulnerabilities in AI-generated Python code (Windows + WSL only)",
   "version": "0.0.1",
   "publisher": "redlyne",
