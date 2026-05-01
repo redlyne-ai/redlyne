@@ -6,7 +6,7 @@
   **Detect and patch vulnerabilities in AI-generated Python code, directly from your editor.**
 
   [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
-  [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/redlyne.redlyne?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=redlyne.redlyne)
+  [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/redlyne.redlyne?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=redlyne.redlyne-ai)
   [![Platform](https://img.shields.io/badge/platform-Windows%20%2B%20WSL2-success)](#status)
   [![Website](https://img.shields.io/badge/website-redlyne.io-red)](https://redlyne.io)
 
