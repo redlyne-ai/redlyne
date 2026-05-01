@@ -22,7 +22,7 @@ Redlyne is a VS Code extension that scans Python code — especially code genera
 
 It runs entirely on your machine. No code is sent to any server.
 
-> **Built _for_ AI. Not built _with_ AI.**
+> **Built _for_ AI. Built _without_ AI.**
 > Redlyne is powered by a deterministic rule engine — no LLM, no probabilistic guesses, no hallucinated fixes. The detection rules are hand-crafted by security researchers, not auto-generated. Every flag and every remediation suggestion is reproducible and auditable.
 
 ## Why Redlyne
@@ -33,7 +33,7 @@ Redlyne sits in your editor and flags the same patterns the moment you select th
 
 ## Features
 
-- **Built for AI, not with AI** — deterministic rule engine, no LLM, no hallucinations, every flag is reproducible
+- **Built for AI, built without AI** — deterministic rule engine, no LLM, no hallucinations, every flag is reproducible
 - **Expert-curated rule set** — detection patterns hand-crafted by security researchers targeting OWASP Top 10 categories observed in AI-generated Python code
 - **Static vulnerability detection** on Python code selected in the editor
 - **Automated remediation suggestions**, applied as in-place edits to the source file with your explicit confirmation
