@@ -22,20 +22,23 @@ Redlyne is a VS Code extension that scans Python code — especially code genera
 
 It runs entirely on your machine. No code is sent to any server.
 
+> **Built _for_ AI. Not built _with_ AI.**
+> Redlyne is powered by a deterministic rule engine — no LLM, no probabilistic guesses, no hallucinated fixes. The detection rules are hand-crafted by security researchers, not auto-generated. Every flag and every remediation suggestion is reproducible and auditable.
+
 ## Why Redlyne
 
 AI coding assistants are fast, but they reliably introduce a long tail of well-known vulnerability patterns: SQL injection from string concatenation, command injection from `os.system`, weak crypto defaults, hard-coded secrets, unsafe deserialization, path traversal, SSRF, and more. Spotting them after the fact during code review is slow and inconsistent.
 
-Redlyne sits in your editor and flags the same patterns the moment you select the snippet, then offers a remediated version. Think of it as a focused linter for the specific failure modes of LLM-generated code.
+Redlyne sits in your editor and flags the same patterns the moment you select the snippet, then offers a remediated version. Think of it as a focused linter for the specific failure modes of LLM-generated code — except instead of relying on another LLM to find LLM bugs, it uses a curated set of deterministic rules built by people whose job is to find vulnerabilities.
 
 ## Features
 
+- **Built for AI, not with AI** — deterministic rule engine, no LLM, no hallucinations, every flag is reproducible
+- **Expert-curated rule set** — detection patterns hand-crafted by security researchers targeting OWASP Top 10 categories observed in AI-generated Python code
 - **Static vulnerability detection** on Python code selected in the editor
 - **Automated remediation suggestions**, applied as in-place edits to the source file with your explicit confirmation
 - **Right-click integration** in the editor context menu for any Python selection
-- **Notifications** summarizing the vulnerabilities found and the runtime of the analysis
 - **Local execution** — your code never leaves your machine
-- Designed for the failure modes of AI-generated code, not generic linting
 
 ## Installation
 
