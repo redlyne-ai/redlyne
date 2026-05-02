@@ -34,9 +34,6 @@
     "patch",
     "wsl"
   ],
-  "os": [
-    "win32"
-  ],
   "activationEvents": [
     "onCommand:redlyne.runAnalysis"
   ],
