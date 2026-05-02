@@ -43,7 +43,7 @@ Redlyne sits in your editor and flags the same patterns the moment you select th
 ## What's inside
 
 - **85 deterministic detection rules** covering **35 CWE categories** from the OWASP Top 10:2021
-- Rules derived from analysis of **240 real vulnerable Python samples** sourced from the [SecurityEval](https://stg-tud.github.io/sec-eval/) and Copilot CWE Scenarios Dataset benchmarks
+- Rules derived from analysis of **240 real vulnerable Python samples** sourced from [SecurityEval](https://github.com/s2e-lab/SecurityEval) and the [Copilot CWE Scenarios Dataset](https://zenodo.org/records/5225651), two established security benchmarks
 - Each detected vulnerability comes with an **automated patch suggestion** — not a comment, not an LLM guess, but a concrete code replacement
 - Patch quality on par with leading LLMs (Pylint score ~9/10) but with significantly **lower added complexity**
 
