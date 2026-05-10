@@ -1,0 +1,16 @@
+{
+  "comments": [
+    "Request args vulnerability",
+    "escape the variable and validate contents before using it"
+  ],
+  "error": null,
+  "imports": [
+    "from markupsafe import escape"
+  ],
+  "original_code": "from flask import Flask, request, make_response\\n \\n app = Flask(__name__)\\n \\n @app.route(\"/profile\")\\n def profile():\\n     username = request.args.get('username')\\n     response = make_response(f\"Hello {username}\")\\n     return response\\n ",
+  "remediated_code": "from flask import Flask, request, make_response\\n \\n app = Flask(__name__)\\n \\n @app.route(\"/profile\")\\n def profile():\\n     username = request.args.get('username')\\n     response = make_response(f\"Hello {escape(username)}\")\\n     return response\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Broken Access Control"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "comments": [
+    "enable certificate verification to prevent MITM attacks",
+    "enable certificate verification; pass a CA bundle path if a self-signed cert is genuinely required"
+  ],
+  "error": null,
+  "imports": [],
+  "original_code": "\"\"\"\\n Fixture: requests.get with verify=False.\\n \\n CWE-295: disabling TLS certificate verification opens the channel to MITM.\\n Engine should rewrite to verify=True. (If the target genuinely uses a\\n self-signed cert, the right fix is to pass the CA bundle path, not to\\n disable verification.)\\n \"\"\"\\n import requests\\n \\n \\n def fetch():\\n     return requests.get(\"https://example.com/api\", verify=False)\\n ",
+  "remediated_code": "\"\"\"\\n Fixture: requests.get with verify=True.\\n \\n CWE-295: disabling TLS certificate verification opens the channel to MITM.\\n Engine should rewrite to verify=True. (If the target genuinely uses a\\n self-signed cert, the right fix is to pass the CA bundle path, not to\\n disable verification.)\\n \"\"\"\\n import requests\\n \\n \\n def fetch():\\n     return requests.get(\"https://example.com/api\", verify=True)\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Authentication Failures",
+    "Injection"
+  ]
+}

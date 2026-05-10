@@ -1,26 +1,36 @@
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const runPatchitpyFromText = require('./src/RunPatchitpyFromText');
 
-function ensureScriptsExecutable(extensionPath) {
-    if (process.platform === 'win32') return;
-    const scriptsDir = path.join(extensionPath, 'launch_tool');
-    try {
-        const files = fs.readdirSync(scriptsDir);
-        files.filter(f => f.endsWith('.sh')).forEach(f => {
-            try { fs.chmodSync(path.join(scriptsDir, f), 0o755); } catch (_) {}
-        });
-    } catch (err) {
-        console.warn('Redlyne: could not chmod scripts:', err.message);
+
+/**
+ * Verify a usable Python interpreter is available. As of v0.1.0 the
+ * engine is a single Python script — no WSL, no bash. We just need
+ * `python3` (POSIX) or `python` / `py` (Windows).
+ */
+function checkPython() {
+    const candidates = process.platform === 'win32'
+        ? ['python', 'python3', 'py']
+        : ['python3', 'python'];
+    for (const cmd of candidates) {
+        try {
+            const res = spawnSync(cmd, ['--version'], { stdio: 'ignore' });
+            if (res.status === 0) return true;
+        } catch (_) { /* try next */ }
     }
+    vscode.window.showErrorMessage(
+        'Redlyne requires Python 3.10+ on PATH. Install Python and reload VS Code: ' +
+        'https://www.python.org/downloads/'
+    );
+    return false;
 }
 
+
 function ensureScratchDirs(extensionPath) {
-    // The bundled bash script writes intermediate files to launch_tool/generated_file/
-    // without creating it first. The folder is empty in the repo and therefore not
-    // shipped inside the .vsix, so we recreate it on activation.
+    // Engine output is fully in-memory + stdout, but we keep this dir
+    // around for any future caching needs.
     const scratchDir = path.join(extensionPath, 'launch_tool', 'generated_file');
     try {
         fs.mkdirSync(scratchDir, { recursive: true });
@@ -29,38 +39,20 @@ function ensureScratchDirs(extensionPath) {
     }
 }
 
-function checkWindowsWSL() {
-    if (process.platform !== 'win32') {
-        vscode.window.showErrorMessage(
-            'Redlyne currently runs only on Windows with WSL installed. ' +
-            'Cross-platform support (Linux/macOS) is planned for a future release.'
-        );
-        return false;
-    }
-    try {
-        execSync('wsl --status', { stdio: 'ignore' });
-        return true;
-    } catch (_) {
-        vscode.window.showErrorMessage(
-            'Redlyne requires WSL (Windows Subsystem for Linux). ' +
-            'Please install WSL2 and try again: https://learn.microsoft.com/windows/wsl/install'
-        );
-        return false;
-    }
-}
 
 function activate(context) {
     console.log('Redlyne is now active!');
-    ensureScriptsExecutable(context.extensionPath);
     ensureScratchDirs(context.extensionPath);
 
     let disposable1 = vscode.commands.registerCommand('redlyne.runAnalysis', () => {
-        if (!checkWindowsWSL()) return;
+        if (!checkPython()) return;
         runPatchitpyFromText();
     });
     context.subscriptions.push(disposable1);
 }
 
+
 function deactivate() {}
+
 
 module.exports = { activate, deactivate };

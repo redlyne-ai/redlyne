@@ -28,6 +28,13 @@ npm-debug.log*
 # Coverage / test outputs
 coverage/
 .nyc_output/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Local benchmark snapshots (commit only intentionally-named baselines)
+benchmarks/results/benchmark_*.json
+!benchmarks/results/baseline_*.json
 
 # Source assets that don't ship in the .vsix
 images/R.png
@@ -40,3 +47,24 @@ img/
 
 # Website lives in its own repo (redlyne-ai/website), nested here only locally
 website/
+
+# Devaic engine (parked locally for v0.1.0 evaluation, not part of the extension)
+DeVAIC-main/
+Devaic-main/
+
+# External research datasets pulled by the bench harness. Too large to
+# version-control, redistributable from upstream. The bench script
+# (tests/bench_dataset.py) walks dataset/ at runtime.
+#   - dataset/SecurityEval-main/             from github.com/s2e-lab/SecurityEval
+#   - dataset/copilot-cwe-scenarios-dataset/ from zenodo.org/records/5225651
+dataset/
+
+# Bench result snapshots — keep curated baselines only
+benchmarks/dataset_results/run_*.json
+benchmarks/dataset_results/run_*.md
+benchmarks/patching_results/run_*.json
+benchmarks/patching_results/run_*.md
+!benchmarks/dataset_results/baseline_*.json
+!benchmarks/dataset_results/baseline_*.md
+!benchmarks/patching_results/baseline_*.json
+!benchmarks/patching_results/baseline_*.md

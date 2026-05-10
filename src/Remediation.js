@@ -1,140 +1,126 @@
-const fs = require('fs');
-const path = require('path');
 const vscode = require('vscode');
-const deleteDirectory = require('./utilities/deleteDirectory');
-const replaceQuotes = require('./utilities/replaceQuotes'); 
+const replaceQuotes = require('./utilities/replaceQuotes');
 
-function getRemediation(remediationFilePath) {
 
-    const fileData = fs.readFileSync(remediationFilePath, 'utf8');
-    const lines = fileData.split('\n');
-    const vuln = lines[0];
-    let remediatedCode ="";
-    let comments = [];
-    let imports = [];
-
-    if(lines[1] === 'NO-REM'){
-        remediatedCode = 'NO-REM';
-    }else if(lines[1] === 'REM-WITH-COMMENT'){
-        remediatedCode = 'REM-WITH-COMMENT';
-    }else if(lines[2]){
-        //remediatedCode = lines[2].split('\\n ').join('\n');
-        remediatedCode = lines[2].split('\\n ').join('\n').replace(/^\n/, '');
-        if (remediatedCode.endsWith(' ')) {
-            remediatedCode = remediatedCode.replace(/ +$/, '');
-        }
-        remediatedCode = replaceQuotes(remediatedCode);
-    }
-
-    let i=3;
-    while(lines[i] !== 'imports' && i < lines.length){
-        comments.push(lines[i]);
-        i++;
-    }
-    i++;
-    for (i; i < lines.length; i++) {
-        imports.push(lines[i]);
-    }
-    
-    return {
-        vuln: vuln,
-        remediatedCode: remediatedCode,
-        comments: comments,
-        imports: imports
-    };
+/**
+ * Decode the inline-encoded `remediated_code` field from the engine.
+ *
+ * The engine emits code with `\n ` as a literal separator (not real
+ * newlines) for compatibility with the legacy bash output format. We
+ * convert that back into multi-line text and trim a few quirks that
+ * crept in during the bash era (leading newline, trailing space).
+ */
+function decodeInlineCode(s) {
+    if (typeof s !== 'string' || !s) return '';
+    let out = s.split('\\n ').join('\n').replace(/^\n/, '');
+    if (out.endsWith(' ')) out = out.replace(/ +$/, '');
+    return replaceQuotes(out);
 }
 
-function checkImports(imports, remediateCode, editor) {
-    const document = editor.document;
-    const text = document.getText();
 
-    //console.log(text);
-    let importsToImport = "";
-    for (let i = 0; i < imports.length; i++) {
-        if(imports[i] !== '' && !text.includes(imports[i]) && !remediateCode.includes(imports[i])){
-            importsToImport += `${imports[i]}\n`;
+/**
+ * Compute which import lines to actually insert at the top of the file:
+ * skip any import that is already present in the active document or
+ * already part of the remediated snippet.
+ */
+function importsToPrepend(imports, remediatedCode, editor) {
+    const text = editor.document.getText();
+    let out = '';
+    for (const imp of imports || []) {
+        if (imp && !text.includes(imp) && !remediatedCode.includes(imp)) {
+            out += `${imp}\n`;
         }
     }
-
-    return importsToImport;
-   
+    return out;
 }
 
-function remediate(fileDir, fileName, editor, selection) {
-    const remediationPath = path.join(fileDir, `results_codeFrom_${path.parse(fileName).name}\\`);
 
-    // Leggi il primo file nella directory remediationPath
-    const files = fs.readdirSync(remediationPath).filter(file => {
-        const filePath = path.join(remediationPath, file);
-        return fs.statSync(filePath).isFile();
-    });
-
-    if (files.length === 0) {
-        console.error('No files found in the remediation directory.');
-        return;
-    }
-
-    deleteDirectory(remediationPath);
-
-    const remediatedFile = files[0];
-    const remediatedFilePathFilePath = path.join(remediationPath, remediatedFile);
-    //console.log(remediatedFilePathFilePath); 
-
-
-    const result = getRemediation(remediatedFilePathFilePath);
-    
-    if (result.vuln === 'SAFE-CODE') {
+/**
+ * Drive the user-facing remediation flow given the parsed EngineResult
+ * dict produced by `runEngine` (src/execPatchitpy.js).
+ *
+ * Replaces the legacy bash workflow that wrote intermediate files into
+ * a results_codeFrom_<name> directory — we now consume the JSON output
+ * directly, which is faster and works on any OS that has Python.
+ */
+function remediate(result, editor, selection) {
+    if (!result || result.status === 'safe') {
         vscode.window.showInformationMessage('🔴 [Redlyne]: No vulnerabilities found');
         return;
     }
-    let vuln = result.vuln.trim().replace(/^, /, '');
-    vscode.window.showInformationMessage(`🔴 [Redlyne]: Detected vulnerabilities of ${vuln}`);
-    const remediatedCode = result.remediatedCode;
-
-    if(remediatedCode === 'NO-REM'){
-        vscode.window.showInformationMessage('🔴 [Redlyne]: No remediation available');
+    if (result.status === 'error') {
+        vscode.window.showErrorMessage(`🔴 [Redlyne]: Engine error — ${result.error || 'unknown'}`);
         return;
     }
 
-    let commentToPrint = "";
-    for (let i = 0; i < result.comments.length; i++) {
-        if(result.comments[i] !== ''){
-            commentToPrint += `• ${result.comments[i]}\n`;
-        }
+    const vulnList = (result.vulnerabilities || []).join(', ');
+    if (vulnList) {
+        vscode.window.showInformationMessage(`🔴 [Redlyne]: Detected vulnerabilities of ${vulnList}`);
     }
 
-    vscode.window.showInformationMessage(`🔴 [Redlyne]:\n${commentToPrint}`);
-    if(result.remediatedCode === 'REM-WITH-COMMENT'){ 
+    const remediatedCode = decodeInlineCode(result.remediated_code);
+    const originalCode = decodeInlineCode(result.original_code);
+
+    // Print every comment the engine produced (one per matched rule).
+    const comments = (result.comments || []).filter(Boolean);
+    if (comments.length) {
+        const bullet = comments.map(c => `• ${c}`).join('\n');
+        vscode.window.showInformationMessage(`🔴 [Redlyne]:\n${bullet}`);
+    }
+
+    // Guard against legacy bash sentinel tokens leaking into the buffer.
+    // The old engine emitted "NO-REM" / "REM-WITH-COMMENT" as the entire
+    // remediated_code string when no real fix could be applied; if a
+    // stale build of the engine ever resurfaces those, treat them as
+    // "no real change" instead of writing the literal string into code.
+    const LEGACY_SENTINELS = new Set(['NO-REM', 'REM-WITH-COMMENT', 'SAFE-CODE']);
+    const trimmed = remediatedCode.trim();
+    const isLegacySentinel = LEGACY_SENTINELS.has(trimmed);
+
+    if (!remediatedCode || isLegacySentinel || remediatedCode === originalCode) {
+        vscode.window.showInformationMessage('🔴 [Redlyne]: No automatic fix available — see comments above.');
         return;
     }
-    
-    const importsToImport = checkImports(result.imports, result.remediatedCode,editor);
 
-    
+    const importsBlock = importsToPrepend(result.imports, remediatedCode, editor);
+
     vscode.window.showInformationMessage(
-        `🔴 [Redlyne]: Do you want to fix the code?`, 
-        'Yes', 
+        '🔴 [Redlyne]: Do you want to fix the code?',
+        'Yes',
         'No'
     ).then(choice => {
-        if (choice === 'Yes') {
-            // Rimpiazza il codice se l'utente accetta
-            editor.edit(editBuilder => {
-                editBuilder.replace(selection, remediatedCode);
-                if(importsToImport !== ""){
-                    editBuilder.insert(new vscode.Position(0, 0), importsToImport);
-                }
-            });
-            vscode.window.showInformationMessage('🔴 [Redlyne]: The code has been modified');
-        } else {
-            // Notifica l'utente che ha rifiutato
+        if (choice !== 'Yes') {
             vscode.window.showInformationMessage('🔴 [Redlyne]: No change has been applied');
+            return;
         }
+
+        // We use a single atomic WorkspaceEdit instead of two chained
+        // editor.edit(...) calls. With two edits the second one was
+        // dropped silently in some VS Code versions — the buffer got
+        // the snippet replaced but the imports never made it in.
+        const wsEdit = new vscode.WorkspaceEdit();
+        const uri = editor.document.uri;
+        if (importsBlock !== '') {
+            wsEdit.insert(uri, new vscode.Position(0, 0), importsBlock);
+        }
+        wsEdit.replace(uri, selection, remediatedCode);
+
+        vscode.workspace.applyEdit(wsEdit).then(applied => {
+            if (!applied) {
+                vscode.window.showWarningMessage(
+                    '🔴 [Redlyne]: VS Code refused to apply the edit.'
+                );
+                return;
+            }
+            const msg = importsBlock !== ''
+                ? '🔴 [Redlyne]: Code modified — imports inserted at the top of the file'
+                : '🔴 [Redlyne]: The code has been modified';
+            vscode.window.showInformationMessage(msg);
+        }, err => {
+            vscode.window.showErrorMessage(`🔴 [Redlyne]: applyEdit error — ${err && err.message || err}`);
+        });
     });
 }
-
-
-
-
 
 
 module.exports = remediate;

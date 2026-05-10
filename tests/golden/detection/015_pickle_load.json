@@ -1,0 +1,15 @@
+{
+  "comments": [
+    "pickle deserializes arbitrary objects; use json for untrusted input"
+  ],
+  "error": null,
+  "imports": [
+    "import json"
+  ],
+  "original_code": "\"\"\"\\n Fixture: pickle.loads on untrusted bytes.\\n \\n CWE-502: Insecure Deserialization. pickle is a remote-code-execution\\n primitive when fed attacker-controlled bytes. For untrusted input use\\n json (or schema-validated msgpack). Engine should rewrite to json.loads.\\n \"\"\"\\n import pickle\\n \\n \\n def load(blob):\\n     return pickle.loads(blob)\\n ",
+  "remediated_code": "\"\"\"\\n Fixture: pickle.loads on untrusted bytes.\\n \\n CWE-502: Insecure Deserialization. pickle is a remote-code-execution\\n primitive when fed attacker-controlled bytes. For untrusted input use\\n json (or schema-validated msgpack). Engine should rewrite to json.loads.\\n \"\"\"\\n import pickle\\n \\n \\n def load(blob):\\n     return json.loads(blob)\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Software and Data Integrity Failures"
+  ]
+}

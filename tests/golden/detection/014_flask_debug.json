@@ -1,0 +1,13 @@
+{
+  "comments": [
+    "never run Flask with debug=True in production (RCE via Werkzeug debugger)"
+  ],
+  "error": null,
+  "imports": [],
+  "original_code": "\"\"\"\\n Fixture: Flask app started with debug=True.\\n \\n CWE-489 / CWE-94: Werkzeug's debugger console allows arbitrary code\\n execution via the browser when an exception fires. Never run with\\n debug=True in production. Engine should rewrite to debug=False.\\n \"\"\"\\n from flask import Flask\\n \\n app = Flask(__name__)\\n \\n \\n @app.route(\"/\")\\n def index():\\n     return \"hello\"\\n \\n \\n if __name__ == \"__main__\":\\n     app.run(debug=True)\\n ",
+  "remediated_code": "\"\"\"\\n Fixture: Flask app started with debug=False.\\n \\n CWE-489 / CWE-94: Werkzeug's debugger console allows arbitrary code\\n execution via the browser when an exception fires. Never run with\\n debug=False in production. Engine should rewrite to debug=False.\\n \"\"\"\\n from flask import Flask\\n \\n app = Flask(__name__)\\n \\n \\n @app.route(\"/\")\\n def index():\\n     return \"hello\"\\n \\n \\n if __name__ == \"__main__\":\\n     app.run(debug=False)\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Security Misconfiguration"
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "timestamp": "2026-05-10T18:42:08Z",
+  "rules_loaded": 459,
+  "sections": [
+    {
+      "label": "SecurityEval (insecure-code only)",
+      "entries_total": 121,
+      "entries_assessed": 31,
+      "entries_skipped_no_real_patch": 90,
+      "syntax_fail": 0,
+      "regression_fail": 0,
+      "fully_clean": 31,
+      "syntax_pass_rate": 1.0,
+      "regression_pass_rate": 1.0,
+      "fully_clean_rate": 1.0,
+      "elapsed_s": 0.58,
+      "per_rule": [
+        {
+          "rule": "PICKLE-FAILURE-001",
+          "applied": 3,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 3
+        },
+        {
+          "rule": "REDIRECT-VAR-CONCAT-001",
+          "applied": 3,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 3
+        },
+        {
+          "rule": "YAML-LOAD-001",
+          "applied": 2,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 2
+        },
+        {
+          "rule": "LDAP-FORMAT-INJECTION-001",
+          "applied": 2,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 2
+        },
+        {
+          "rule": "MD5-001",
+          "applied": 2,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 2
+        },
+        {
+          "rule": "RANDOM-001",
+          "applied": 2,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 2
+        },
+        {
+          "rule": "MAKE-RESPONSE-IDENT-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "OS-REMOVE-USER-INPUT-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "OPEN-USER-VAR-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "OS-SYSTEM-VAR-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "TEMPLATE-RENDER-USER-INPUT-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "MAKE-RESPONSE-CONCAT-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "MAKE-RESPONSE-HTML-CONCAT-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "SQL-PERCENT-FORMAT-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "EVAL-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "DEBUG-TRUE-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "CHECK-HOSTNAME-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "REQUESTS-005",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "REQUESTS-VERIFY-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "DSA-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "RANDOM-CHOICE-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "JWT-DECODE-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "XML-SAX-MAKE-PARSER-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        },
+        {
+          "rule": "PBKDF2-HMAC-001",
+          "applied": 1,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "clean": 1
+        }
+      ],
+      "syntax_failures": [],
+      "regression_failures": []
+    },
+    {
+      "label": "PoisonPy (paper-comparison: paired vulnerable/clean, Cotroneo et al.)",
+      "total_vulnerable": 155,
+      "detected": 150,
+      "patch_attempted": 58,
+      "patch_clean": 58,
+      "syntax_fail": 0,
+      "regression_fail": 0,
+      "rate_detected_then_patched": 0.387,
+      "rate_total_detected_and_patched": 0.374,
+      "elapsed_s": 0.39,
+      "by_category": {
+        "TPI": {
+          "total": 75,
+          "detected": 72,
+          "patch_attempted": 28,
+          "patch_clean": 28,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "detect_rate": 0.96,
+          "rate_detected_then_patched": 0.389,
+          "rate_total_detected_and_patched": 0.373
+        },
+        "DPI": {
+          "total": 40,
+          "detected": 39,
+          "patch_attempted": 16,
+          "patch_clean": 16,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "detect_rate": 0.975,
+          "rate_detected_then_patched": 0.41,
+          "rate_total_detected_and_patched": 0.4
+        },
+        "ICI": {
+          "total": 40,
+          "detected": 39,
+          "patch_attempted": 14,
+          "patch_clean": 14,
+          "syntax_fail": 0,
+          "regression_fail": 0,
+          "detect_rate": 0.975,
+          "rate_detected_then_patched": 0.359,
+          "rate_total_detected_and_patched": 0.35
+        }
+      }
+    }
+  ]
+}

@@ -24,3 +24,12 @@ package-lock.json
 launch_tool/script_py/preprocessingcopy.py
 images/R.png
 website/**
+tests/**
+benchmarks/**
+requirements-dev.txt
+DeVAIC-main/**
+Devaic-main/**
+dataset/**
+**/__pycache__/**
+.pytest_cache/**
+**/*.pyc

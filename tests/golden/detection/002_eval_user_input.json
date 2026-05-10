@@ -1,0 +1,15 @@
+{
+  "comments": [
+    "use ast.literal_eval instead of eval to avoid code execution"
+  ],
+  "error": null,
+  "imports": [
+    "import ast"
+  ],
+  "original_code": "def handle(user_expr: str):\\n     return eval(user_expr)\\n \\n print(handle(input(\"expr> \")))\\n ",
+  "remediated_code": "def handle(user_expr: str):\\n     return ast.literal_eval(user_expr)\\n \\n print(handle(input(\"expr> \")))\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Injection"
+  ]
+}

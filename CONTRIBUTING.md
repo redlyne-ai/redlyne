@@ -62,15 +62,18 @@ code --install-extension redlyne-x.y.z.vsix
 ```
 extension.js                # entry point, command registration, activation hooks
 src/                        # JavaScript: command handlers, remediation flow
-  RunPatchitpyFromText.js   #   wraps user selection, prepares temp files
-  execPatchitpy.js          #   shells out to WSL + bash
-  Remediation.js            #   parses the result file, drives the in-editor edit
+  RunPatchitpyFromText.js   #   wraps user selection, prepares the temp file
+  execPatchitpy.js          #   spawns the Python engine and parses its JSON output
+  Remediation.js            #   applies the fix to the buffer (atomic WorkspaceEdit)
   utilities/                #   small helpers
-launch_tool/                # bash + python runtime
-  patchitpy_starter.sh      #   entry script invoked from JS
-  patchitpy_ext.sh          #   preprocessing + dispatch
-  tool_derem_ext.sh         #   the rule engine
-  script_py/                #   small Python helpers (preprocessing, conversion)
+launch_tool/                # Python rule engine
+  redlyne_engine.py         #   detection + remediation engine, single file
+  rules/                    #   Devaic v2.0 schema rules + Redlyne extensions (459 rules)
+tests/                      # parity tests + fixtures + bench harness
+  bench_dataset.py          #   recall/precision benchmark on 3 datasets
+  bench_patching.py         #   patch syntax + regression safety benchmark
+benchmarks/                 # baseline snapshots (committed) + run results (gitignored)
+scripts/preflight.sh        # local pre-vsce-package sanity check
 images/icon.png             # marketplace icon
 ```
 
@@ -79,7 +82,7 @@ images/icon.png             # marketplace icon
 1. **Open an issue first** for non-trivial changes so we can align before you spend time
 2. **Fork** the repository and create a branch from `main` (e.g., `fix/wsl-path-spaces`, `feat/rule-jwt-none-alg`)
 3. **Write code** with the existing style as a reference
-4. **Test** locally on Windows + WSL2 before opening the PR
+4. **Test** locally before opening the PR — run `bash scripts/preflight.sh` (Python 3.10+ required, no other dependency)
 5. **Open a Pull Request** with a clear title, a summary of the change, and a screenshot or short description of the user-visible behavior if applicable
 6. Be ready to iterate on review feedback
 

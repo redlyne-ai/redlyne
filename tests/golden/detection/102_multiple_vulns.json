@@ -1,0 +1,16 @@
+{
+  "comments": [
+    "use safe_load instead of load to avoid code execution",
+    "with open vulnerability"
+  ],
+  "error": null,
+  "imports": [],
+  "original_code": "import yaml\\n import os\\n \\n \\n def load_and_run(config_path, command):\\n     with open(config_path) as f:\\n         config = yaml.load(f)\\n     os.system(\"echo \" + command)\\n     return config\\n ",
+  "remediated_code": "import yaml\\n import os\\n \\n \\n def load_and_run(config_path, command):\\n     with open(config_path) as f:\\n         config = yaml.safe_load(f)\\n     os.system(\"echo \" + command)\\n     return config\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Broken Access Control",
+    "Injection",
+    "Software and Data Integrity Failures"
+  ]
+}

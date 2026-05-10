@@ -1,0 +1,13 @@
+{
+  "comments": [
+    "use create_default_context which validates certificates by default"
+  ],
+  "error": null,
+  "imports": [],
+  "original_code": "\"\"\"\\n Fixture: ssl._create_unverified_context disables certificate verification.\\n \\n CWE-295: Improper Certificate Validation. Anything connecting through this\\n context is wide open to MITM. Engine should rewrite to\\n ssl.create_default_context() which validates by default.\\n \"\"\"\\n import ssl\\n \\n \\n def make_context():\\n     return ssl._create_unverified_context()\\n ",
+  "remediated_code": "\"\"\"\\n Fixture: ssl._create_unverified_context disables certificate verification.\\n \\n CWE-295: Improper Certificate Validation. Anything connecting through this\\n context is wide open to MITM. Engine should rewrite to\\n ssl.create_default_context() which validates by default.\\n \"\"\"\\n import ssl\\n \\n \\n def make_context():\\n     return ssl.create_default_context()\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Authentication Failures"
+  ]
+}

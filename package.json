@@ -1,8 +1,8 @@
 {
   "name": "redlyne-ai",
   "displayName": "Redlyne AI",
-  "description": "Detect and patch vulnerabilities in AI-generated Python code (Windows + WSL only)",
-  "version": "0.0.1",
+  "description": "Detect and patch vulnerabilities in AI-generated Python code (Windows, macOS, Linux)",
+  "version": "0.1.0",
   "publisher": "redlyne",
   "license": "Apache-2.0",
   "icon": "images/icon.png",
@@ -32,7 +32,7 @@
     "static analysis",
     "AI code",
     "patch",
-    "wsl"
+    "cross-platform"
   ],
   "activationEvents": [
     "onCommand:redlyne.runAnalysis"

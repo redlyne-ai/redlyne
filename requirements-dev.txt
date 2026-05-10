@@ -1,0 +1,4 @@
+# Dev/test dependencies for Redlyne.
+# Install with: pip install -r requirements-dev.txt
+
+pytest>=7.0,<10

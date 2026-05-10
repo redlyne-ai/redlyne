@@ -1,0 +1,14 @@
+{
+  "comments": [
+    "use safe_dump to prevent emitting unsafe Python-specific YAML tags"
+  ],
+  "error": null,
+  "imports": [],
+  "original_code": "\"\"\"\\n Fixture: yaml.dump emits Python-specific tags by default.\\n \\n CWE-502 family: writing arbitrary Python objects via yaml.dump means a\\n downstream yaml.load (without SafeLoader) can deserialize and execute\\n them. Use yaml.safe_dump for round-trippable, language-agnostic YAML.\\n \"\"\"\\n import yaml\\n \\n \\n def serialize(data):\\n     return yaml.dump(data)\\n ",
+  "remediated_code": "\"\"\"\\n Fixture: yaml.dump emits Python-specific tags by default.\\n \\n CWE-502 family: writing arbitrary Python objects via yaml.dump means a\\n downstream yaml.load (without SafeLoader) can deserialize and execute\\n them. Use yaml.safe_dump for round-trippable, language-agnostic YAML.\\n \"\"\"\\n import yaml\\n \\n \\n def serialize(data):\\n     return yaml.safe_dump(data)\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Injection",
+    "Software and Data Integrity Failures"
+  ]
+}

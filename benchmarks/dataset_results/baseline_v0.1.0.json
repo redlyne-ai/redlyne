@@ -1,0 +1,769 @@
+{
+  "timestamp": "2026-05-10T18:42:07Z",
+  "rules_loaded": 459,
+  "rule_load_errors": 0,
+  "grand_total": 1455,
+  "total_elapsed_s": 8.12,
+  "sections": [
+    {
+      "label": "SecurityEval (insecure-code only)",
+      "total": 121,
+      "hit": 60,
+      "overall_recall": 0.496,
+      "elapsed_s": 0.31,
+      "by_cwe": [
+        {
+          "cwe": "CWE-020",
+          "total": 6,
+          "hit": 2,
+          "recall": 0.333,
+          "miss_examples": [
+            "SecurityEval/CWE-020_author_2.py",
+            "SecurityEval/CWE-020_codeql_2.py",
+            "SecurityEval/CWE-020_codeql_3.py"
+          ]
+        },
+        {
+          "cwe": "CWE-611",
+          "total": 6,
+          "hit": 4,
+          "recall": 0.667,
+          "miss_examples": [
+            "SecurityEval/CWE-611_author_1.py",
+            "SecurityEval/CWE-611_codeql_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-601",
+          "total": 5,
+          "hit": 3,
+          "recall": 0.6,
+          "miss_examples": [
+            "SecurityEval/CWE-601_sonar_1.py",
+            "SecurityEval/CWE-601_sonar_4.py"
+          ]
+        },
+        {
+          "cwe": "CWE-022",
+          "total": 4,
+          "hit": 3,
+          "recall": 0.75,
+          "miss_examples": [
+            "SecurityEval/CWE-022_codeql_2.py"
+          ]
+        },
+        {
+          "cwe": "CWE-327",
+          "total": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-502",
+          "total": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-079",
+          "total": 3,
+          "hit": 2,
+          "recall": 0.667,
+          "miss_examples": [
+            "SecurityEval/CWE-079_sonar_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-094",
+          "total": 3,
+          "hit": 2,
+          "recall": 0.667,
+          "miss_examples": [
+            "SecurityEval/CWE-094_author_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-117",
+          "total": 3,
+          "hit": 1,
+          "recall": 0.333,
+          "miss_examples": [
+            "SecurityEval/CWE-117_codeql_1.py",
+            "SecurityEval/CWE-117_sonar_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-295",
+          "total": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-347",
+          "total": 3,
+          "hit": 2,
+          "recall": 0.667,
+          "miss_examples": [
+            "SecurityEval/CWE-347_sonar_3.py"
+          ]
+        },
+        {
+          "cwe": "CWE-703",
+          "total": 3,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-703_author_1.py",
+            "SecurityEval/CWE-703_author_2.py",
+            "SecurityEval/CWE-703_author_3.py"
+          ]
+        },
+        {
+          "cwe": "CWE-730",
+          "total": 3,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-078",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-089",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-090",
+          "total": 2,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-113",
+          "total": 2,
+          "hit": 1,
+          "recall": 0.5,
+          "miss_examples": [
+            "SecurityEval/CWE-113_sonar_2.py"
+          ]
+        },
+        {
+          "cwe": "CWE-116",
+          "total": 2,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-259",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-319",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-321",
+          "total": 2,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-321_author_1.py",
+            "SecurityEval/CWE-321_author_2.py"
+          ]
+        },
+        {
+          "cwe": "CWE-326",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-434",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-521",
+          "total": 2,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-521_sonar_1.py",
+            "SecurityEval/CWE-521_sonar_2.py"
+          ]
+        },
+        {
+          "cwe": "CWE-522",
+          "total": 2,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-522_author_1.py",
+            "SecurityEval/CWE-522_pearce_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-643",
+          "total": 2,
+          "hit": 1,
+          "recall": 0.5,
+          "miss_examples": [
+            "SecurityEval/CWE-643_codeql_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-798",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-918",
+          "total": 2,
+          "hit": 2,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-080",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-095",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-099",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-1204",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-193",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-200",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-200_author_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-209",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-209_codeql_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-215",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-250",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-250_mitre_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-252",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-252_author_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-269",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-269_mitre_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-283",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-285",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-285_codeql_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-306",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-306_pearce_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-329",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-330",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-331",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-339",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-367",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-377",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-377_codeql_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-379",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-379_sonar_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-385",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-385_mitre_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-400",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-400_sonar_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-406",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-406_mitre_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-414",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-425",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-454",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-462",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-462_mitre_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-477",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-477_author_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-595",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-595_author_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-605",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-605_author_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-641",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-641_sonar_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-732",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-759",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-760",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-776",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-776_codeql_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-827",
+          "total": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-835",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": []
+        },
+        {
+          "cwe": "CWE-841",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-841_mitre_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-941",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-941_mitre_1.py"
+          ]
+        },
+        {
+          "cwe": "CWE-943",
+          "total": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "miss_examples": [
+            "SecurityEval/CWE-943_sonar_1.py"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Copilot CWE Scenarios (full dataset, no sampling)",
+      "total": 1024,
+      "hit": 637,
+      "overall_recall": 0.622,
+      "elapsed_s": 6.51,
+      "by_cwe": [
+        {
+          "cwe": "CWE-089",
+          "total": 484,
+          "hit": 395,
+          "recall": 0.816,
+          "miss_examples": [
+            "Copilot/experiments_dop/cwe-89/unsubscribe/gen_code_environment_variables/experiments_dop_cwe-89_unsubscribe_scenario_code_environment_variables_copilot_19.py",
+            "Copilot/experiments_dop/cwe-89/unsubscribe/gen_code_environment_variables/experiments_dop_cwe-89_unsubscribe_scenario_code_environment_variables_copilot_22.py",
+            "Copilot/experiments_dop/cwe-89/unsubscribe/gen_code_environment_variables/experiments_dop_cwe-89_unsubscribe_scenario_code_environment_variables_copilot_24.py"
+          ]
+        },
+        {
+          "cwe": "CWE-502",
+          "total": 71,
+          "hit": 37,
+          "recall": 0.521,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-502/codeql-eg-UnsafeDeserialization-c/gen_scenario/experiments_dow_cwe-502_codeql-eg-UnsafeDeserialization-c_scenario_copilot_0.py",
+            "Copilot/experiments_dow/cwe-502/codeql-eg-UnsafeDeserialization-c/gen_scenario/experiments_dow_cwe-502_codeql-eg-UnsafeDeserialization-c_scenario_copilot_1.py",
+            "Copilot/experiments_dow/cwe-502/codeql-eg-UnsafeDeserialization-c/gen_scenario/experiments_dow_cwe-502_codeql-eg-UnsafeDeserialization-c_scenario_copilot_10.py"
+          ]
+        },
+        {
+          "cwe": "CWE-798",
+          "total": 68,
+          "hit": 17,
+          "recall": 0.25,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-798/codeql-eg-HardcodedCredentials-c/gen_scenario/experiments_dow_cwe-798_codeql-eg-HardcodedCredentials-c_scenario_copilot_0.py",
+            "Copilot/experiments_dow/cwe-798/codeql-eg-HardcodedCredentials-c/gen_scenario/experiments_dow_cwe-798_codeql-eg-HardcodedCredentials-c_scenario_copilot_1.py",
+            "Copilot/experiments_dow/cwe-798/codeql-eg-HardcodedCredentials-c/gen_scenario/experiments_dow_cwe-798_codeql-eg-HardcodedCredentials-c_scenario_copilot_10.py"
+          ]
+        },
+        {
+          "cwe": "CWE-434",
+          "total": 66,
+          "hit": 46,
+          "recall": 0.697,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-434/my-eg-1/gen_scenario/experiments_dow_cwe-434_my-eg-1_scenario_copilot_1.py",
+            "Copilot/experiments_dow/cwe-434/my-eg-1/gen_scenario/experiments_dow_cwe-434_my-eg-1_scenario_copilot_11.py",
+            "Copilot/experiments_dow/cwe-434/my-eg-1/gen_scenario/experiments_dow_cwe-434_my-eg-1_scenario_copilot_12.py"
+          ]
+        },
+        {
+          "cwe": "CWE-522",
+          "total": 64,
+          "hit": 19,
+          "recall": 0.297,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-522/my-eg-1-c/gen_scenario/experiments_dow_cwe-522_my-eg-1-c_scenario_copilot_1.py",
+            "Copilot/experiments_dow/cwe-522/my-eg-1-c/gen_scenario/experiments_dow_cwe-522_my-eg-1-c_scenario_copilot_11.py",
+            "Copilot/experiments_dow/cwe-522/my-eg-1-c/gen_scenario/experiments_dow_cwe-522_my-eg-1-c_scenario_copilot_12.py"
+          ]
+        },
+        {
+          "cwe": "CWE-200",
+          "total": 60,
+          "hit": 41,
+          "recall": 0.683,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-200/mitre-eg-2/gen_scenario/experiments_dow_cwe-200_mitre-eg-2_scenario_copilot_0.py",
+            "Copilot/experiments_dow/cwe-200/mitre-eg-2/gen_scenario/experiments_dow_cwe-200_mitre-eg-2_scenario_copilot_1.py",
+            "Copilot/experiments_dow/cwe-200/mitre-eg-2/gen_scenario/experiments_dow_cwe-200_mitre-eg-2_scenario_copilot_10.py"
+          ]
+        },
+        {
+          "cwe": "CWE-306",
+          "total": 58,
+          "hit": 29,
+          "recall": 0.5,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-306/my-eg-1/gen_scenario/experiments_dow_cwe-306_my-eg-1_scenario_copilot_0.py",
+            "Copilot/experiments_dow/cwe-306/my-eg-1/gen_scenario/experiments_dow_cwe-306_my-eg-1_scenario_copilot_1.py",
+            "Copilot/experiments_dow/cwe-306/my-eg-1/gen_scenario/experiments_dow_cwe-306_my-eg-1_scenario_copilot_2.py"
+          ]
+        },
+        {
+          "cwe": "CWE-020",
+          "total": 45,
+          "hit": 5,
+          "recall": 0.111,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-20/codeql-eg-IncompleteUrlSubstringSanitization/gen_scenario/experiments_dow_cwe-20_codeql-eg-IncompleteUrlSubstringSanitization_scenario_copilot_0.py",
+            "Copilot/experiments_dow/cwe-20/codeql-eg-IncompleteUrlSubstringSanitization/gen_scenario/experiments_dow_cwe-20_codeql-eg-IncompleteUrlSubstringSanitization_scenario_copilot_12.py",
+            "Copilot/experiments_dow/cwe-20/codeql-eg-IncompleteUrlSubstringSanitization/gen_scenario/experiments_dow_cwe-20_codeql-eg-IncompleteUrlSubstringSanitization_scenario_copilot_13.py"
+          ]
+        },
+        {
+          "cwe": "CWE-079",
+          "total": 41,
+          "hit": 12,
+          "recall": 0.293,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-79/codeql-eg-Jinja2WithoutEscaping/gen_scenario/experiments_dow_cwe-79_codeql-eg-Jinja2WithoutEscaping_scenario_copilot_10.py",
+            "Copilot/experiments_dow/cwe-79/codeql-eg-Jinja2WithoutEscaping/gen_scenario/experiments_dow_cwe-79_codeql-eg-Jinja2WithoutEscaping_scenario_copilot_13.py",
+            "Copilot/experiments_dow/cwe-79/codeql-eg-Jinja2WithoutEscaping/gen_scenario/experiments_dow_cwe-79_codeql-eg-Jinja2WithoutEscaping_scenario_copilot_14.py"
+          ]
+        },
+        {
+          "cwe": "CWE-022",
+          "total": 32,
+          "hit": 10,
+          "recall": 0.312,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-22/codeql-eg-TarSlip/gen_scenario/experiments_dow_cwe-22_codeql-eg-TarSlip_scenario_copilot_0.py",
+            "Copilot/experiments_dow/cwe-22/codeql-eg-TarSlip/gen_scenario/experiments_dow_cwe-22_codeql-eg-TarSlip_scenario_copilot_1.py",
+            "Copilot/experiments_dow/cwe-22/codeql-eg-TarSlip/gen_scenario/experiments_dow_cwe-22_codeql-eg-TarSlip_scenario_copilot_2.py"
+          ]
+        },
+        {
+          "cwe": "CWE-078",
+          "total": 24,
+          "hit": 15,
+          "recall": 0.625,
+          "miss_examples": [
+            "Copilot/experiments_dow/cwe-78/codeql-eg-python-CommandInjection/gen_scenario/experiments_dow_cwe-78_codeql-eg-python-CommandInjection_scenario_copilot_12.py",
+            "Copilot/experiments_dow/cwe-78/codeql-eg-python-CommandInjection/gen_scenario/experiments_dow_cwe-78_codeql-eg-python-CommandInjection_scenario_copilot_2.py",
+            "Copilot/experiments_dow/cwe-78/codeql-eg-python-CommandInjection/gen_scenario/experiments_dow_cwe-78_codeql-eg-python-CommandInjection_scenario_copilot_20.py"
+          ]
+        },
+        {
+          "cwe": "CWE-732",
+          "total": 11,
+          "hit": 11,
+          "recall": 1.0,
+          "miss_examples": []
+        }
+      ]
+    },
+    {
+      "label": "PoisonPy (paired clean/poisoned, Cotroneo et al.)",
+      "total": 310,
+      "elapsed_s": 0.33,
+      "overall": {
+        "TP": 150,
+        "FP": 60,
+        "FN": 5,
+        "TN": 95,
+        "precision": 0.714,
+        "recall": 0.968,
+        "f1": 0.822,
+        "accuracy": 0.79,
+        "fpr": 0.387
+      },
+      "by_category": {
+        "DPI": {
+          "TP": 39,
+          "FP": 13,
+          "FN": 1,
+          "TN": 27,
+          "precision": 0.75,
+          "recall": 0.975,
+          "f1": 0.848,
+          "accuracy": 0.825,
+          "fpr": 0.325
+        },
+        "ICI": {
+          "TP": 39,
+          "FP": 10,
+          "FN": 1,
+          "TN": 30,
+          "precision": 0.796,
+          "recall": 0.975,
+          "f1": 0.876,
+          "accuracy": 0.863,
+          "fpr": 0.25
+        },
+        "TPI": {
+          "TP": 72,
+          "FP": 37,
+          "FN": 3,
+          "TN": 38,
+          "precision": 0.661,
+          "recall": 0.96,
+          "f1": 0.783,
+          "accuracy": 0.733,
+          "fpr": 0.493
+        }
+      }
+    }
+  ]
+}

@@ -1,11 +1,18 @@
 # Coverage
 
-Redlyne ships with **85 deterministic detection rules** covering **35 CWE categories** mapped to the **OWASP Top 10:2021**. Of these:
+Redlyne ships with **459 deterministic detection rules** mapped to the **OWASP Top 10:2025**, of which **71 carry auto-remediation** (regex sub or multi-line template) verified to be syntax + regression safe.
 
-- **10 CWEs are in MITRE's Top 25 list** of the most dangerous software weaknesses (in any year between 2021 and 2023). They are marked with a ⭐ below.
-- **9 of the 10 OWASP categories** are covered. The only one not yet covered is *A06: Vulnerable and Outdated Components*, which we consider out of scope for snippet-level analysis (it requires dependency tree scanning, a separate tool category).
+Measured detection performance on the two reference benchmarks (1,145 known-vulnerable Python files):
 
-The full mapping below is the complete list of CWEs Redlyne detects today. The detection rules behind these CWEs were derived from analysis of 240 real vulnerable Python samples sourced from [SecurityEval](https://github.com/s2e-lab/SecurityEval) and the [Copilot CWE Scenarios Dataset](https://zenodo.org/records/5225651).
+| Benchmark | Files | Recall |
+|---|---|---|
+| [SecurityEval](https://github.com/s2e-lab/SecurityEval) (hand-curated) | 121 | **47.1%** |
+| [Copilot CWE Scenarios](https://zenodo.org/records/5225651) (Pearce et al.) | 1,024 | **61.6%** |
+| **Combined** | **1,145** | **60.0%** |
+
+Full per-CWE recall breakdown lives in [`benchmarks/dataset_results/baseline_v0.1.0.md`](benchmarks/dataset_results/baseline_v0.1.0.md). Reproduce the numbers locally with `python tests/bench_dataset.py`.
+
+The CWE list below is the complete set Redlyne detects today, organized by OWASP Top 10:2025 category.
 
 ---
 
@@ -54,39 +61,42 @@ The full mapping below is the complete list of CWEs Redlyne detects today. The d
 
 - ⭐ [CWE-611](https://cwe.mitre.org/data/definitions/611.html) — Improper Restriction of XML External Entity Reference (XXE)
 
-## A07: Identification and Authentication Failures
+## A07: Authentication Failures
 
 - [CWE-295](https://cwe.mitre.org/data/definitions/295.html) — Improper Certificate Validation
-- [CWE-384](https://cwe.mitre.org/data/definitions/384.html) — Session Fixation
+- [CWE-297](https://cwe.mitre.org/data/definitions/297.html) — Improper Validation of Certificate with Host Mismatch
+- [CWE-306](https://cwe.mitre.org/data/definitions/306.html) — Missing Authentication for Critical Function
+- [CWE-321](https://cwe.mitre.org/data/definitions/321.html) — Use of Hard-coded Cryptographic Key
+- [CWE-522](https://cwe.mitre.org/data/definitions/522.html) — Insufficiently Protected Credentials (password hashed with fast hash)
+- ⭐ [CWE-798](https://cwe.mitre.org/data/definitions/798.html) — Use of Hard-coded Credentials
 
 ## A08: Software and Data Integrity Failures
 
-- ⭐ [CWE-502](https://cwe.mitre.org/data/definitions/502.html) — Deserialization of Untrusted Data
+- ⭐ [CWE-502](https://cwe.mitre.org/data/definitions/502.html) — Deserialization of Untrusted Data (yaml, pickle, jsonpickle, marshal)
 
 ## A09: Security Logging and Monitoring Failures
 
 - [CWE-117](https://cwe.mitre.org/data/definitions/117.html) — Improper Output Neutralization for Logs
+- [CWE-209](https://cwe.mitre.org/data/definitions/209.html) — Generation of Error Message Containing Sensitive Information
 
-## A10: Server-Side Request Forgery (SSRF)
-
-- ⭐ [CWE-918](https://cwe.mitre.org/data/definitions/918.html) — Server-Side Request Forgery (SSRF)
+> **Note on SSRF**: in OWASP Top 10:2025 the standalone SSRF category (A10:2021) was merged into Injection. CWE-918 detections still fire — they now surface under "Injection" rather than a dedicated SSRF tag.
 
 ---
 
 ## At a glance
 
-| OWASP 2021 category | CWEs covered |
+| OWASP 2025 category | Recall on benchmarks |
 |---|---|
-| A01: Broken Access Control | 4 |
-| A02: Cryptographic Failures | 9 |
-| A03: Injection | 13 |
-| A04: Insecure Design | 3 |
-| A05: Security Misconfiguration | 1 |
-| A07: Identification and Authentication Failures | 2 |
-| A08: Software and Data Integrity Failures | 1 |
-| A09: Security Logging and Monitoring Failures | 1 |
-| A10: Server-Side Request Forgery (SSRF) | 1 |
-| **Total** | **35** |
+| A01: Broken Access Control | strong on CWE-732 (100%), CWE-022 (~70%) |
+| A02: Cryptographic Failures | very strong (CWE-327/295/297/319 all ≥90%) |
+| A03: Software Supply Chain Failures | not covered yet (out of scope for snippet-level) |
+| A04: Cryptographic Failures (was A02) | see A02 |
+| A05: Injection | strong on CWE-089 SQL (81%), gaps on CWE-079 XSS (24%), CWE-078 cmd (17%) |
+| A06: Insecure Design | partial coverage |
+| A07: Authentication Failures | very strong on CWE-295/798, partial on CWE-522 (30%) |
+| A08: Software and Data Integrity Failures | strong on CWE-502 (50-100% depending on dataset) |
+| A09: Security Logging and Monitoring Failures | partial |
+| A10: Mishandling of Exceptional Conditions | not covered yet (new category in 2025) |
 
 ---
 
@@ -94,7 +104,8 @@ The full mapping below is the complete list of CWEs Redlyne detects today. The d
 
 Honest gap analysis:
 
-- **A06: Vulnerable and Outdated Components** — out of scope for snippet-level analysis. Use a Software Composition Analysis tool (Dependabot, Snyk, OWASP Dependency-Check) for this.
+- **A03: Software Supply Chain Failures** — out of scope for snippet-level analysis. Use a Software Composition Analysis tool (Dependabot, Snyk, OWASP Dependency-Check) for dependency-level supply chain risks.
+- **A10: Mishandling of Exceptional Conditions** — new in OWASP 2025; we're studying which CWEs (CWE-703, CWE-754, CWE-755) are tractable as regex rules.
 - **CVE-specific patterns** — Redlyne detects vulnerability *classes* (CWE), not specific exploits in named libraries.
 - **Logic bugs and authorization flaws** that depend on application context (e.g., a missing permission check in a specific flow) — these need full-application analysis, not snippet-level scanning.
 

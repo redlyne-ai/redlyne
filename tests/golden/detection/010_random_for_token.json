@@ -1,0 +1,15 @@
+{
+  "comments": [
+    "use secrets (CSPRNG) instead of the random module for security-sensitive values"
+  ],
+  "error": null,
+  "imports": [
+    "import secrets"
+  ],
+  "original_code": "\"\"\"\\n Fixture: using `random` module for security-sensitive token generation.\\n \\n CWE-330: Use of Insufficiently Random Values.\\n The random module is a Mersenne Twister \u2014 predictable from a few outputs.\\n For tokens, session IDs, or anything an attacker could observe, use\\n `secrets` (CSPRNG) instead.\\n \\n Engine should detect RANDOM-001 and rewrite to secrets.SystemRandom().\\n \"\"\"\\n import random\\n \\n \\n def generate_token():\\n     return random.randint(100000, 999999)\\n ",
+  "remediated_code": "\"\"\"\\n Fixture: using `random` module for security-sensitive token generation.\\n \\n CWE-330: Use of Insufficiently Random Values.\\n The random module is a Mersenne Twister \u2014 predictable from a few outputs.\\n For tokens, session IDs, or anything an attacker could observe, use\\n `secrets` (CSPRNG) instead.\\n \\n Engine should detect RANDOM-001 and rewrite to secrets.SystemRandom().\\n \"\"\"\\n import random\\n \\n \\n def generate_token():\\n     return secrets.SystemRandom().randint(100000, 999999)\\n ",
+  "status": "vulnerable",
+  "vulnerabilities": [
+    "Cryptographic Failures"
+  ]
+}
