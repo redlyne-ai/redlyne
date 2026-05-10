@@ -1,5 +1,24 @@
 # Change Log
 
+## [0.1.2] - 2026-05-10
+
+### Fixed
+- The Python engine was filtering out required imports if their text
+  appeared anywhere in the patched source — including inside comments
+  or string literals. For example, a comment like
+  `# expected: ast.literal_eval + import ast` made the engine think
+  `import ast` was already there and drop it from the imports list,
+  so Remediation.js had nothing to insert. The check now uses a
+  regex anchored at start-of-line to match real import statements
+  only, the same way Python parses them.
+- Rule `pattern_not` and `pattern_not_file` checks were being
+  evaluated against the raw source, so a sanitizer mention inside a
+  comment (e.g. `# use escape(name) here`) could suppress a legitimate
+  detection on a real `make_response(name)` call elsewhere in the
+  file. Comments are now blanked out (preserving line numbers and
+  positions) before negation checks, so only real Python code can
+  suppress a detection.
+
 ## [0.1.1] - 2026-05-10
 
 ### Fixed

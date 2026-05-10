@@ -250,6 +250,31 @@ def load_rules(
 # ---------------------------------------------------------------------------
 # Scanner
 # ---------------------------------------------------------------------------
+_COMMENT_RE = re.compile(r"#[^\n]*")
+
+
+def _strip_comments_for_negation(text: str) -> str:
+    """
+    Replace `#...` comment bodies with spaces so a regex search over the
+    result behaves as if comments weren't there — but preserves line
+    numbers, column positions, and overall length so anything line-scoped
+    or position-aware still works.
+
+    Used only for `pattern_not` / `pattern_not_file` checks. The actual
+    detection pattern still runs on the original source so that real
+    code containing `#` characters in strings is unaffected (we only
+    blank out comment text, not strings — for that we'd need a real
+    parser; the heuristic catches the common case where rule authors
+    used a substring-style pattern that gets fooled by a comment).
+    """
+    return _COMMENT_RE.sub(lambda m: " " * len(m.group(0)), text)
+
+
+def _strip_line_comment(line: str) -> str:
+    """Same idea as _strip_comments_for_negation, single-line variant."""
+    return _COMMENT_RE.sub(lambda m: " " * len(m.group(0)), line)
+
+
 def _line_matches_rule(line: str, rule: Rule, captured_var: Optional[str] = None) -> Optional[re.Match]:
     """
     Check if a line matches the rule's main pattern, accounting for:
@@ -272,14 +297,18 @@ def _line_matches_rule(line: str, rule: Rule, captured_var: Optional[str] = None
     if m is None:
         return None
 
-    # Apply pattern_not exceptions
+    # Apply pattern_not exceptions. Do the negation check against a
+    # comment-stripped version of the line so that a sanitizer mention
+    # inside a comment (e.g. `# use escape(name)`) doesn't suppress a
+    # real detection on the same line.
     if rule.pattern_not is not None:
         not_pattern = rule.pattern_not
+        line_for_neg = _strip_line_comment(line)
         if captured_var and "VAR_PLACEHOLDER" in not_pattern.pattern:
             not_compiled = re.compile(not_pattern.pattern.replace("VAR_PLACEHOLDER", re.escape(captured_var)))
-            if not_compiled.search(line):
+            if not_compiled.search(line_for_neg):
                 return None
-        elif not_pattern.search(line):
+        elif not_pattern.search(line_for_neg):
             return None
 
     return m
@@ -305,10 +334,13 @@ def scan(code: str, rules: list[Rule]) -> list[dict]:
 
     # Pre-compute which rules are suppressed by their pattern_not_file.
     # We do this once per file rather than once per line (saves time on
-    # rules with expensive lookahead patterns).
+    # rules with expensive lookahead patterns). Comments are blanked
+    # out for the negation check so sanitizer mentions in `# ...`
+    # comments don't accidentally suppress real detections.
+    code_for_neg = _strip_comments_for_negation(code)
     suppressed_rule_ids: set[str] = set()
     for rule in rules:
-        if rule.pattern_not_file is not None and rule.pattern_not_file.search(code):
+        if rule.pattern_not_file is not None and rule.pattern_not_file.search(code_for_neg):
             suppressed_rule_ids.add(rule.rule_id)
 
     for rule in rules:
@@ -420,7 +452,20 @@ def remediate(
                     stripped = imp.strip()
                     if not stripped:
                         continue
-                    if stripped in patched or stripped in imports_to_add:
+                    # Don't be fooled by the import statement appearing
+                    # inside a comment, a docstring or a regular string
+                    # in the patched source. The Python parser only sees
+                    # an import statement when it's at the start of a
+                    # logical line — match it that way (re.MULTILINE so
+                    # ^ matches every line start, optional indent for
+                    # local imports inside functions/methods).
+                    import_re = re.compile(
+                        r"^[ \t]*" + re.escape(stripped) + r"(?:\s|$)",
+                        re.MULTILINE,
+                    )
+                    if import_re.search(patched):
+                        continue
+                    if stripped in imports_to_add:
                         continue
                     imports_to_add.append(stripped)
 
