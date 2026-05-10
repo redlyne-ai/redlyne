@@ -2,7 +2,7 @@
   "name": "redlyne-ai",
   "displayName": "Redlyne AI",
   "description": "Detect and patch vulnerabilities in AI-generated Python code (Windows, macOS, Linux)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "redlyne",
   "license": "Apache-2.0",
   "icon": "images/icon.png",

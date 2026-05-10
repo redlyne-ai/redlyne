@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.1.1] - 2026-05-10
+
+### Fixed
+- Import duplication check could be fooled by comments or strings
+  containing the import statement (e.g. `# please add: import ast`
+  would suppress the insertion of a real `import ast`). The check now
+  matches the import statement only at the start of a line, the way
+  Python actually parses it.
+
 ## [0.1.0] - 2026-05-10
 
 ### Changed (breaking)

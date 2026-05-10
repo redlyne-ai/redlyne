@@ -22,14 +22,32 @@ function decodeInlineCode(s) {
  * Compute which import lines to actually insert at the top of the file:
  * skip any import that is already present in the active document or
  * already part of the remediated snippet.
+ *
+ * The check matches the import statement *as a real Python statement*,
+ * i.e. anchored at start-of-line (with optional leading whitespace) —
+ * not as a bare substring. Otherwise comments like
+ *     # expected: ast.literal_eval + import ast
+ * would suppress the insertion of a real `import ast`.
  */
+function escapeRegExp(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function alreadyImported(text, imp) {
+    // Match `imp` only at the start of a line (modulo leading whitespace).
+    // The `m` flag makes ^ match each line start, not just the doc start.
+    const re = new RegExp('^[ \\t]*' + escapeRegExp(imp) + '(?:\\s|$)', 'm');
+    return re.test(text);
+}
+
 function importsToPrepend(imports, remediatedCode, editor) {
     const text = editor.document.getText();
     let out = '';
     for (const imp of imports || []) {
-        if (imp && !text.includes(imp) && !remediatedCode.includes(imp)) {
-            out += `${imp}\n`;
-        }
+        if (!imp) continue;
+        if (alreadyImported(text, imp)) continue;
+        if (alreadyImported(remediatedCode, imp)) continue;
+        out += `${imp}\n`;
     }
     return out;
 }
