@@ -59,6 +59,15 @@ DATASET_DIR = REPO_ROOT / "dataset"
 SECURITYEVAL_JSONL = DATASET_DIR / "SecurityEval-main" / "dataset.jsonl"
 COPILOT_DIR = DATASET_DIR / "copilot-cwe-scenarios-dataset"
 POISONPY_DIR = DATASET_DIR / "PoisonPy"
+# CVEfixes is unpacked under dataset/CVEfixes_v1.0.8/Data/CVEfixes.db
+# (db is built locally via `sqlite3 CVEfixes.db < CVEfixes_v1.0.8.sql`).
+CVEFIXES_DB = DATASET_DIR / "CVEfixes_v1.0.8" / "Data" / "CVEfixes.db"
+# SafeCoder (ETH Zurich, ICML 2024) — paired commit-based fixes.
+SAFECODER_DIR = DATASET_DIR / "SafeCoder-main"
+# PromSec (NJIT, CCS 2024) — Copilot-generated vulnerable Python files.
+# Results_cfg_*/Fixed_codes/ exists but is NOT a usable ground truth: the
+# "fixed" outputs are functionality-stripped stubs, not real fixes.
+PROMSEC_DIR = DATASET_DIR / "PromSec-main"
 RESULTS_DIR = REPO_ROOT / "benchmarks" / "dataset_results"
 
 
@@ -302,6 +311,232 @@ def load_poisonpy() -> list[dict]:
     return out
 
 
+def load_cvefixes(db_path: Path = CVEFIXES_DB,
+                  limit: int | None = 1000,
+                  max_file_lines: int = 400) -> list[dict]:
+    """
+    Load Python paired vulnerable/fixed file_change samples from the
+    CVEfixes SQLite database (Bhandari, Naseer, Moonen — PROMISE 2021).
+
+    Each row in `file_change` with `programming_language='Python'` and
+    change_type='MODIFY' carries both `code_before` (vulnerable) and
+    `code_after` (fixed). We expand each row into two bench entries:
+      - vulnerable=1 with code_before
+      - vulnerable=0 with code_after
+
+    `limit` caps the number of CVE-file pairs (not entries) to keep
+    the bench time predictable. `max_file_lines` skips very large
+    files where running every static analyzer would dominate the
+    wall-clock without changing the conclusions.
+    """
+    if not db_path.exists():
+        return []
+    import sqlite3
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    # Join with fixes + cwe_classification to surface the CVE id and CWE.
+    # CVEfixes stores change_type as the repr of pydriller's enum,
+    # e.g. 'ModificationType.MODIFY', not a clean 'MODIFY'.
+    q = """
+    SELECT
+        fc.file_change_id,
+        fc.filename,
+        fc.code_before,
+        fc.code_after,
+        f.cve_id,
+        (SELECT cwe_id FROM cwe_classification
+         WHERE cve_id = f.cve_id LIMIT 1) AS cwe_id
+    FROM file_change fc
+    JOIN fixes f ON fc.hash = f.hash
+    WHERE fc.programming_language = 'Python'
+      AND fc.change_type = 'ModificationType.MODIFY'
+      AND fc.code_before IS NOT NULL
+      AND fc.code_after IS NOT NULL
+      AND length(fc.code_before) > 0
+      AND length(fc.code_after) > 0
+    """
+    if limit:
+        q += f" LIMIT {int(limit)}"
+
+    out: list[dict] = []
+    try:
+        for row in conn.execute(q):
+            code_before = row["code_before"] or ""
+            code_after = row["code_after"] or ""
+            # Skip files that are too large — keeps the bench tractable
+            # and avoids one giant CVE dominating wall-clock time.
+            if code_before.count("\n") > max_file_lines:
+                continue
+            if code_after.count("\n") > max_file_lines:
+                continue
+            cve = row["cve_id"] or "?"
+            fname = row["filename"] or "?"
+            cwe = row["cwe_id"] or "?"
+            out.append({
+                "cwe": cwe,
+                "category": cwe,
+                "code": code_before,
+                "vulnerable": 1,
+                "source": f"CVEfixes/{cve}/{fname}#vuln",
+            })
+            out.append({
+                "cwe": cwe,
+                "category": cwe,
+                "code": code_after,
+                "vulnerable": 0,
+                "source": f"CVEfixes/{cve}/{fname}#fixed",
+            })
+    finally:
+        conn.close()
+    return out
+
+
+def load_safecoder(include_fixes: bool = True) -> list[dict]:
+    """
+    Load paired vulnerable/fixed Python functions from the SafeCoder
+    dataset (He et al., ICML 2024). SafeCoder ships two JSONL files
+    of real-world commit-based fixes:
+
+      - sec-desc      — adapted from prior SVEN work (4 CWEs)
+      - sec-new-desc  — new in SafeCoder (9 CWEs)
+
+    Each row contains `func_src_before` (vulnerable function) and
+    `func_src_after` (the fix as it appeared in the public commit).
+    These are *human-authored, production-grade* fixes — much stronger
+    ground truth than synthetic LLM-generated patches.
+
+    We filter rows to Python only (via file_name.endswith('.py')) and
+    yield each pair as TWO entries:
+      - vulnerable=1 with func_src_before
+      - vulnerable=0 with func_src_after  (only if include_fixes=True)
+
+    When `include_fixes=False` only the vulnerable side is emitted,
+    which lets the detection bench run in "recall-only" mode against
+    SafeCoder (a useful comparison if the user suspects a baseline is
+    gaming precision on the after-fix samples).
+    """
+    if not SAFECODER_DIR.exists():
+        return []
+    out: list[dict] = []
+    jsonl_files = [
+        SAFECODER_DIR / "data_train_val" / "train" / "sec-desc.jsonl",
+        SAFECODER_DIR / "data_train_val" / "val"   / "sec-desc.jsonl",
+        SAFECODER_DIR / "data_train_val" / "train" / "sec-new-desc.jsonl",
+        SAFECODER_DIR / "data_train_val" / "val"   / "sec-new-desc.jsonl",
+    ]
+    for jpath in jsonl_files:
+        if not jpath.exists():
+            continue
+        split_id = f"{jpath.parent.name}/{jpath.stem}"  # train/sec-desc, etc.
+        with jpath.open(encoding="utf-8") as f:
+            for i, line in enumerate(f):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                fn = (row.get("file_name") or "").lower()
+                # Filter Python only — the JSONL `lang` field is null;
+                # rely on the actual file extension stored in `file_name`.
+                if not fn.endswith(".py"):
+                    continue
+                cwe = normalize_cwe(row.get("vul_type") or "")
+                if not cwe or cwe in PYTHON_INAPPLICABLE_CWES:
+                    continue
+                before = row.get("func_src_before") or ""
+                after  = row.get("func_src_after") or ""
+                if not before.strip():
+                    continue
+                source_prefix = f"SafeCoder/{split_id}/row{i}"
+                out.append({
+                    "cwe": cwe,
+                    "category": cwe,
+                    "code": before,
+                    "vulnerable": 1,
+                    "source": f"{source_prefix}#vuln",
+                })
+                if include_fixes and after.strip() and after.strip() != before.strip():
+                    out.append({
+                        "cwe": cwe,
+                        "category": cwe,
+                        "code": after,
+                        "vulnerable": 0,
+                        "source": f"{source_prefix}#fixed",
+                    })
+    return out
+
+
+def load_promsec() -> list[dict]:
+    """
+    Load PromSec vulnerable Python samples (Nazzal et al., CCS 2024).
+
+    PromSec uses a graph-GAN + LLM loop to iteratively rewrite
+    Copilot-generated insecure code. For our purposes we use only the
+    *input* corpus: two directories of vulnerable Python files.
+
+      - Training_DS/ — ~500 files, CWE encoded in the filename
+        (e.g. `experiments_dop_cwe-89_unsubscribe_..._copilot_0.py`)
+      - Testing_DS/  — ~100 files (`test_file{0..99}.py`) with no CWE
+        label in the filename.
+
+    The Results_cfg_*/Fixed_codes/ outputs are intentionally NOT
+    treated as ground truth: in spot checks the LLM "fixed" code
+    strips all functionality and returns success stubs, so similarity
+    against them would penalize honest fixes.
+
+    For Testing_DS we set cwe='?' so the bench's CWE→OWASP mapping
+    counts those samples as "uncovered" rather than wrong, mirroring
+    how we handle CWEs absent from CWE_TO_OWASP elsewhere.
+    """
+    if not PROMSEC_DIR.exists():
+        return []
+    out: list[dict] = []
+
+    training_dir = PROMSEC_DIR / "Training_DS"
+    if training_dir.is_dir():
+        for f in sorted(training_dir.glob("*.py")):
+            cwe = normalize_cwe(f.name) or "?"
+            if cwe in PYTHON_INAPPLICABLE_CWES:
+                continue
+            try:
+                code = f.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            out.append({
+                "cwe": cwe,
+                "category": cwe,
+                "code": code,
+                "vulnerable": 1,
+                "source": f"PromSec/Training_DS/{f.name}",
+            })
+
+    testing_dir = PROMSEC_DIR / "Testing_DS"
+    if testing_dir.is_dir():
+        for f in sorted(testing_dir.glob("*.py")):
+            try:
+                code = f.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            # No CWE label in filename — try the file content first line
+            # (some files declare `# CWE-XX` in a header comment); fall
+            # back to '?' which is treated as uncovered.
+            head = "\n".join(code.splitlines()[:5])
+            cwe = normalize_cwe(head) or "?"
+            if cwe in PYTHON_INAPPLICABLE_CWES:
+                continue
+            out.append({
+                "cwe": cwe,
+                "category": cwe,
+                "code": code,
+                "vulnerable": 1,
+                "source": f"PromSec/Testing_DS/{f.name}",
+            })
+
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Main bench.
 # ---------------------------------------------------------------------------
@@ -501,15 +736,26 @@ def main():
                    help="Run only the Copilot CWE Scenarios dataset")
     p.add_argument("--poisonpy", action="store_true",
                    help="Run only the PoisonPy paired clean/poisoned dataset")
+    p.add_argument("--safecoder", action="store_true",
+                   help="Run only the SafeCoder paired commit-fix dataset")
+    p.add_argument("--promsec", action="store_true",
+                   help="Run only the PromSec vulnerable-Python dataset")
     p.add_argument("--copilot-sample", type=int, default=5,
                    help="Cap N python files per copilot scenario dir "
                         "(default: 5; pass 0 for no cap = full dataset)")
+    p.add_argument("--no-safecoder-fixes", action="store_true",
+                   help="For SafeCoder, only count the vulnerable side "
+                        "(skip the func_src_after clean samples). Useful "
+                        "for recall-only comparison.")
     args = p.parse_args()
 
-    any_filter = args.securityeval or args.copilot or args.poisonpy
+    any_filter = (args.securityeval or args.copilot or args.poisonpy
+                  or args.safecoder or args.promsec)
     do_se = args.securityeval or not any_filter
     do_co = args.copilot or not any_filter
     do_pp = args.poisonpy or not any_filter
+    do_sc = args.safecoder or not any_filter
+    do_pm = args.promsec or not any_filter
 
     print("Loading rules...", flush=True)
     rules, errors = load_rules(verbose=False)
@@ -554,6 +800,30 @@ def main():
             total_elapsed += section["elapsed_s"]
         else:
             print("  ! PoisonPy not found at", POISONPY_DIR)
+
+    if do_sc:
+        entries = load_safecoder(include_fixes=not args.no_safecoder_fixes)
+        if entries:
+            mode_label = ("paired vuln+fix, ICML 2024"
+                          if not args.no_safecoder_fixes else "vuln-only")
+            section = bench_pairs(entries, rules,
+                                  label=f"SafeCoder ({mode_label}, He et al.)")
+            sections.append(section)
+            grand_total += section["total"]
+            total_elapsed += section["elapsed_s"]
+        else:
+            print("  ! SafeCoder not found at", SAFECODER_DIR)
+
+    if do_pm:
+        entries = load_promsec()
+        if entries:
+            section = bench(entries, rules,
+                            label="PromSec (Copilot-generated vulnerable Python, Nazzal et al.)")
+            sections.append(section)
+            grand_total += section["total"]
+            total_elapsed += section["elapsed_s"]
+        else:
+            print("  ! PromSec not found at", PROMSEC_DIR)
 
     payload = {
         "timestamp": datetime.utcnow().isoformat(timespec="seconds") + "Z",

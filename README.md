@@ -49,51 +49,110 @@ Redlyne sits in your editor and flags vulnerability patterns the moment you sele
 - **~70-100 ms** per snippet on a typical laptop
 - Rules derived from analysis of **vulnerable Python samples** sourced from [SecurityEval](https://github.com/s2e-lab/SecurityEval), the [Copilot CWE Scenarios Dataset](https://zenodo.org/records/5225651), and [PoisonPy](https://github.com/Cotroneo/PoisonPy) — three established security benchmarks
 - Each detected vulnerability comes with an **automated patch suggestion** — not a comment, not an LLM guess, but a concrete code replacement
-- **Patch safety verified end-to-end**: every auto-fix compiles as valid Python and the rule that triggered it no longer fires after the patch (zero regressions)
+- **Auto-fixes verified end-to-end**: every patch is checked for syntax safety, regression-freedom, and that the targeted rule actually stops firing — **9 out of 10 patches** on PoisonPy pass all three checks
 
 ## Measured performance
 
-Redlyne is benchmarked on **PoisonPy** [Cotroneo et al., ICPC 2024], the reference dataset of 310 paired vulnerable / safe Python samples curated to evaluate AI-code-generator security.
+*Evaluated May 2026.* Redlyne is benchmarked on **PoisonPy** [Cotroneo et al., ICPC 2024], the reference dataset of 310 paired vulnerable / safe Python samples curated to evaluate AI-code-generator security. Full cross-dataset numbers in [Head-to-head with open-source baselines](#head-to-head-with-open-source-baselines).
 
 ### Detection on PoisonPy
 
-> **97.4% recall · 0.82 F1 · 459 rules in <100 ms**
+> **96.8% recall · 0.822 F1 · 459 rules in ~1 ms per file**
 
 | Metric | Value |
 |---|---|
-| **Recall** | **97.4%** |
-| **F1 score** | **0.823** |
+| **Recall** | **96.8%** |
+| **F1 score** | **0.822** |
 | **Accuracy** | **79.0%** |
 | Precision | 71.4% |
-| Time on full dataset (310 files) | ~0.3s |
+| Coverage | 100% (310/310 files analyzed) |
+| Time on full dataset (310 files) | ~0.4s |
 
 Recall on PoisonPy is **higher than the baseline reported in the original paper** (~91%) — Redlyne extends the rule set to 459 patterns and catches more issue classes.
 
-### Patching safety
+### Patching correctness
 
-> **100% of generated patches verified safe**
+> **9 out of 10 auto-fixes verified safe**
 
-Every auto-fix Redlyne emits is checked end-to-end on every benchmark sample for two correctness properties:
+When Redlyne emits a patch, the fix is checked against three independent correctness properties:
 
-| Check | Pass rate |
-|---|---|
-| **Patched code compiles as valid Python** | **100%** (58/58 on PoisonPy, 21/21 on SecurityEval) |
-| **Rule that triggered the fix no longer fires after patching** | **100%** (zero regressions) |
+| Check | What it means | Pass rate on PoisonPy applied patches |
+|---|---|---|
+| **Syntax-safe** | Patched code compiles as valid Python | **100%** (58/58) |
+| **Regression-free** | No new rule classes appear after the patch | **93%** (54/58) |
+| **Targeted-clean** | The specific rule that fired stops firing | **97%** (56/58) |
+| **Targeted-full** (all three above) | The patch did its job | **90%** (52/58) |
 
-In other words: when Redlyne suggests a fix, applying it never breaks the file and always actually neutralizes the vulnerability. No silent broken code ever gets suggested.
+In other words: of every patch Redlyne emits, **9 out of 10 successfully remove the targeted vulnerability without breaking syntax or introducing a new rule class**.
 
 ### Reproducibility
 
 ```bash
-python tests/bench_dataset.py     # detection (PoisonPy + SecurityEval + Copilot CWE Scenarios)
-python tests/bench_patching.py    # patch safety
+python tests/bench_baselines.py    # detection across 5 datasets (Redlyne + 4 baselines)
+python tests/bench_remediation.py  # auto-fix head-to-head (Redlyne + PatchitPy + Semgrep)
 ```
 
-Both produce JSON + Markdown reports under `benchmarks/` in under 10 seconds combined.
+Both produce JSON + Markdown reports under `benchmarks/` in a few minutes.
 
 ### Honest disclosure
 
 Redlyne trades some precision (71.4%, vs ~97% reported in the original paper for an 85-rule subset) for the higher recall on a 459-rule rule set. Concretely: more issues are flagged, with more false positives that surface as advisory comments — never as broken code. The trade-off is fully measured, never hidden, and reproducible. Future work focuses on AST-based dataflow tracking to tighten precision without losing recall.
+
+### Head-to-head with open-source baselines
+
+*Evaluated May 2026.*
+
+Redlyne was benchmarked against four other Python security/analysis tools on **five reference datasets covering 1700+ vulnerable Python samples**, with the **same engine and runtime conditions**. All numbers reproducible locally (`python tests/bench_baselines.py` after `pip install bandit semgrep pylint`).
+
+#### PoisonPy — paired vulnerable/clean, n=310 (Cotroneo et al., ICPC 2024)
+
+The headline benchmark: a paired dataset, so precision, F1 and accuracy are meaningfully defined. PoisonPy contains informal snippets representative of AI-generated code — many of them not parseable as standalone Python.
+
+| Tool | Coverage | Precision | Recall | F1 | Accuracy | ms/file |
+|---|---|---|---|---|---|---|
+| Bandit | **17%** | 69.2% | 5.8% | 0.107 | 51.6% | ~20 |
+| Pylint *(†)* | **17%** | 55.8% | 18.7% | 0.280 | 51.9% | ~55 |
+| Semgrep (auto) | 86% | 69.6% | 20.6% | 0.318 | 55.8% | ~700 |
+| DeVAIC v2 (stock rule set) | **100%** | 68.0% | 64.5% | 0.662 | 67.1% | ~0.5 |
+| **Redlyne** | **100%** | **71.4%** | **96.8%** | **0.822** | **79.0%** | **~1.4** |
+
+> **Coverage 17% for Bandit / Pylint** means the tool gave up on 83% of samples (AST parse error). The recall above counts those as missed detections — that's what an actual user experiences. **DeVAIC v2 and Redlyne are the only tools that processed 100% of the dataset**, because they are regex-based and don't require a parse tree.
+
+> *(†)* Pylint's "errors-only" mode behaves close to a random classifier on the parsable samples — what it's really detecting is "this file is syntactically informal", not security.
+
+#### Headline by dataset
+
+The full per-tool numbers (precision/recall/F1/accuracy/coverage/speed) live in [`benchmarks/`](benchmarks/) — the table below shows the publishable headline metric per dataset (F1 for paired, recall for vulnerable-only).
+
+| Dataset | Samples | Bandit | Semgrep | Pylint | DeVAIC v2 | **Redlyne** |
+|---|---|---|---|---|---|---|
+| PoisonPy *(paired, F1)* | 310 | 0.107 | 0.318 | 0.280 | 0.662 | **0.822** |
+| SafeCoder *(paired, F1)* — real OSS commit fixes | 1052 | 0.435 | 0.515 | 0.449 | 0.501 | **0.556** |
+| SecurityEval *(recall)* | 121 | 40.5% | 34.7% | 59.5% | 63.6% | **93.4%** |
+| Copilot CWE Scenarios *(recall)* | 150 | 84.7% | 51.3% | 93.3% | 68.0% | 89.3% |
+| PromSec *(recall)* | 600 | 92.8% | 87.0% | 98.8% | 85.2% | 97.0% |
+
+#### Headline takeaways
+
+- **+0.16 F1 over DeVAIC v2** on PoisonPy — the dataset DeVAIC was originally evaluated on. This isolates the contribution of Redlyne's extensions to the underlying rule schema.
+- **+0.05 F1 over the next-best tool** on SafeCoder, the most production-grade dataset — 526 real vulnerability fixes mined from public open-source commits.
+- **100% coverage on every dataset** — Redlyne never gives up on a file. Bandit and Pylint silently skip 83% of PoisonPy and 56% of SafeCoder because their AST parsers fail on informal / pre-commit-fix Python.
+- **~14× faster than Bandit, ~40× faster than Pylint, ~500× faster than Semgrep** because Redlyne runs in-process inside VS Code rather than spawning a subprocess per file.
+
+### Auto-remediation head-to-head
+
+*Evaluated May 2026.*
+
+Auto-remediation is what makes Redlyne different from most static analyzers. Three open-source tools in the Python space attempt to emit code-modifying fixes: **PatchitPy** (the original DeVAIC + remediation pipeline — same lineage as Redlyne), **Semgrep `--autofix`** (limited to rules carrying a `fix:` block, ~5% of the registry), and Redlyne. DeVAIC v2 stock ships only 2 remediation rules out of 441 (0.5%) — we exclude it from the remediation table since it's not a remediation tool, but it remains a peer in the detection table above.
+
+| Tool | Applied | **Targeted-clean** *(of applied)* | Similarity → ground truth | Speed |
+|---|---|---|---|---|
+| Semgrep `--autofix` | 7/155 (4.5%) | 5/7 (71%) | 0.82 | ~4700 ms/file |
+| **Redlyne** | **58/155 (37%)** | **52/58 (90%)** | 0.70 | **~3 ms/file** |
+
+> **Targeted-clean** measures whether the specific rule that fired pre-patch — *and that carries a remediation block* — no longer fires post-patch, with the patched source still compiling and no new rule classes introduced. It's the honest answer to "did the fix actually do its job?" — independent of whether the file carried other unrelated vulnerabilities. Of every patch Redlyne emits, **9 out of 10 satisfy this check.**
+
+On the larger SafeCoder dataset (526 real commit-based fixes), Redlyne applies a patch on 19% of samples, with 69% of those passing the targeted-clean check. The drop from PoisonPy reflects how often real-world fixes involve function-level refactoring rather than the drop-in substitutions our regex-based remediations target.
 
 ### Citing the benchmark dataset
 

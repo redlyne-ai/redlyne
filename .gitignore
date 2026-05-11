@@ -57,14 +57,34 @@ Devaic-main/
 # (tests/bench_dataset.py) walks dataset/ at runtime.
 #   - dataset/SecurityEval-main/             from github.com/s2e-lab/SecurityEval
 #   - dataset/copilot-cwe-scenarios-dataset/ from zenodo.org/records/5225651
+#   - dataset/PoisonPy/                      from github.com/Cotroneo/PoisonPy
+#   - dataset/PromSec-main/                  from github.com/Mahmoud-Nazzal/PromSec
+#   - dataset/SafeCoder-main/                from github.com/eth-sri/SafeCoder
+#   - dataset/CVEfixes_v1.0.8/               from CVEfixes (Bhandari et al., PROMISE 2021)
 dataset/
+
+# External open-source baseline tools used for head-to-head benchmarks.
+# Same rationale as dataset/: third-party, redistributable from upstream,
+# not part of Redlyne. The bench scripts (tests/bench_baselines.py,
+# tests/bench_remediation.py) shell out to these at runtime.
+#   - baselines/DeVAIC-main/                 (v1.0 and v2.0 rulesets)
+#   - baselines/PatchitPy-main/              (remediation pipeline)
+#   - Bandit / Semgrep / Pylint              installed via pip, not in repo
+baselines/
 
 # Bench result snapshots — keep curated baselines only
 benchmarks/dataset_results/run_*.json
 benchmarks/dataset_results/run_*.md
 benchmarks/patching_results/run_*.json
 benchmarks/patching_results/run_*.md
+benchmarks/baselines_results/run_*.json
+benchmarks/baselines_results/run_*.md
+benchmarks/remediation_results/run_*.json
+benchmarks/remediation_results/run_*.md
 !benchmarks/dataset_results/baseline_*.json
 !benchmarks/dataset_results/baseline_*.md
 !benchmarks/patching_results/baseline_*.json
 !benchmarks/patching_results/baseline_*.md
+
+# Local Excel archive — regenerable via tests/build_benchmark_xlsx.py
+benchmarks/excel_archive/
