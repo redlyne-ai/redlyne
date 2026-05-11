@@ -65,7 +65,7 @@ Redlyne sits in your editor and flags vulnerability patterns the moment you sele
 | **F1 score** | **0.822** |
 | **Accuracy** | **79.0%** |
 | Precision | 71.4% |
-| Coverage | 100% (310/310 files analyzed) |
+| Analyzed | 100% (310/310 files, no parse failures) |
 | Time on full dataset (310 files) | ~0.4s |
 
 Recall on PoisonPy is **higher than the baseline reported in the original paper** (~91%) — Redlyne extends the rule set to 459 patterns and catches more issue classes.
@@ -102,11 +102,11 @@ Both produce JSON + Markdown reports under `benchmarks/` in a few minutes.
 
 #### The bottom line
 
-Across every comparison dimension a developer cares about — coverage, accuracy, speed, fix safety — Redlyne is the only tool that wins on all of them at once.
+Across every dimension that matters — files actually analyzed, accuracy, speed, fix safety — Redlyne is the only tool that wins on all of them at once.
 
 | | Bandit | Semgrep | Pylint | DeVAIC v2 | **Redlyne** |
 |---|---|---|---|---|---|
-| **Coverage** *(% of PoisonPy analyzed, not skipped)* | 17% | 86% | 17% | 100% | **100%** ✓ |
+| **Analyzed** *(% of PoisonPy parsed, not skipped)* | 17% | 86% | 17% | 100% | **100%** ✓ |
 | **Recall** *(PoisonPy, % of vulns caught)* | 5.8% | 20.6% | 18.7% | 64.5% | **96.8%** ✓ |
 | **F1** *(PoisonPy)* | 0.107 | 0.318 | 0.280 | 0.662 | **0.822** ✓ |
 | **Speed** *(ms per file)* | ~20 | ~700 | ~55 | ~0.5 | **~1.4** *(top tier)* |
@@ -114,7 +114,7 @@ Across every comparison dimension a developer cares about — coverage, accuracy
 
 #### The gap, in plain numbers
 
-| Versus | Recall gap | Coverage gap | Speed |
+| Versus | Recall gap | Analyzed gap | Speed |
 |---|---|---|---|
 | Bandit | **+91.0 pp** | **+83 pp** | **~14× faster** |
 | Pylint | **+78.1 pp** | **+83 pp** | **~40× faster** |
