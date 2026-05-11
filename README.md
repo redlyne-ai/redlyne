@@ -36,7 +36,7 @@ Redlyne sits in your editor and flags vulnerability patterns the moment you sele
 ## Features
 
 - **Built for AI, built without AI** — deterministic rule engine, no LLM, no hallucinations, every flag is reproducible
-- **Expert-curated rule set** — 459 detection patterns mapped to OWASP Top 10:2025 categories observed in AI-generated Python code, derived from the SecurityEval, Copilot CWE Scenarios, and PoisonPy benchmarks
+- **Expert-curated rule set** — 459 detection patterns mapped to OWASP Top 10:2025 categories observed in AI-generated Python code, derived from the [SecurityEval](https://github.com/s2e-lab/SecurityEval), [Copilot CWE Scenarios](https://zenodo.org/records/5225651), and [PoisonPy](https://github.com/dessertlab/PoisonPy) benchmarks
 - **Static vulnerability detection** on Python code selected in the editor
 - **Automated remediation suggestions**, applied as in-place edits to the source file with your explicit confirmation
 - **Right-click integration** in the editor context menu for any Python selection
@@ -47,13 +47,13 @@ Redlyne sits in your editor and flags vulnerability patterns the moment you sele
 - **459 deterministic detection rules** mapped to **OWASP Top 10:2025** categories — see the [full list in COVERAGE.md](COVERAGE.md)
 - **70+ rules with auto-remediation**, including 14 multi-line templates that rewrite vulnerable blocks while preserving indentation and adding required imports
 - **~70-100 ms** per snippet on a typical laptop
-- Rules derived from analysis of **vulnerable Python samples** sourced from [SecurityEval](https://github.com/s2e-lab/SecurityEval), the [Copilot CWE Scenarios Dataset](https://zenodo.org/records/5225651), and [PoisonPy](https://github.com/Cotroneo/PoisonPy) — three established security benchmarks
+- Rules derived from analysis of **vulnerable Python samples** in state-of-the-art security benchmark datasets
 - Each detected vulnerability comes with an **automated patch suggestion** — not a comment, not an LLM guess, but a concrete code replacement
 - **Auto-fixes verified end-to-end**: every patch is checked for syntax safety, regression-freedom, and that the targeted rule actually stops firing — **9 out of 10 patches** on PoisonPy pass all three checks
 
 ## Measured performance
 
-*Evaluated May 2026.* Redlyne is benchmarked on **PoisonPy** [Cotroneo et al., ICPC 2024], the reference dataset of 310 paired vulnerable / safe Python samples curated to evaluate AI-code-generator security. Full cross-dataset numbers in [Head-to-head with open-source baselines](#head-to-head-with-open-source-baselines).
+*Evaluated May 2026 across 1700+ vulnerable Python samples spanning five public benchmark datasets.* Full cross-dataset numbers in [Head-to-head with open-source baselines](#head-to-head-with-open-source-baselines).
 
 ### Detection on PoisonPy
 
@@ -94,13 +94,11 @@ python tests/bench_remediation.py  # auto-fix head-to-head (Redlyne + PatchitPy 
 
 Both produce JSON + Markdown reports under `benchmarks/` in a few minutes.
 
-### Honest disclosure
-
-Redlyne trades some precision (71.4%, vs ~97% reported in the original paper for an 85-rule subset) for the higher recall on a 459-rule rule set. Concretely: more issues are flagged, with more false positives that surface as advisory comments — never as broken code. The trade-off is fully measured, never hidden, and reproducible. Future work focuses on AST-based dataflow tracking to tighten precision without losing recall.
-
 ### Head-to-head with open-source baselines
 
 *Evaluated May 2026 across 1700+ vulnerable Python samples spanning five public benchmarks. Reproducible: `python tests/bench_baselines.py`.*
+
+**Tools compared:** [Bandit](https://github.com/PyCQA/bandit) · [Semgrep](https://github.com/semgrep/semgrep) · [Pylint](https://github.com/pylint-dev/pylint) · [DeVAIC v2](https://github.com/dessertlab/DeVAIC) · Redlyne.
 
 #### The bottom line
 
@@ -135,21 +133,25 @@ Semgrep    ███████████████████████
 
 #### Generalization across datasets
 
-The advantage isn't a PoisonPy artifact. On every public Python-vulnerability dataset Redlyne is best or tied-best, with full coverage where AST tools fall apart:
+**Datasets used:** [PoisonPy](https://github.com/dessertlab/PoisonPy) · [SafeCoder](https://github.com/eth-sri/safecoder) · [SecurityEval](https://github.com/s2e-lab/SecurityEval) · [Copilot CWE Scenarios](https://zenodo.org/records/5225651) · [PromSec](https://github.com/Mahmoud-Nazzal/PromSec).
 
-| Dataset | Samples | Headline metric | Best baseline | **Redlyne** |
-|---|---|---|---|---|
-| PoisonPy *(paired)* | 310 | F1 | DeVAIC v2 — 0.662 | **0.822** *(+0.16)* |
-| SafeCoder *(paired, real commit fixes)* | 1052 | F1 | Semgrep — 0.515 | **0.556** *(+0.04)* |
-| SecurityEval *(vuln-only)* | 121 | Recall | DeVAIC v2 — 63.6% | **93.4%** *(+29.8 pp)* |
-| Copilot CWE Scenarios *(vuln-only)* | 150 | Recall | Pylint — 93.3% | 89.3% *(−4 pp)* |
-| PromSec *(vuln-only)* | 600 | Recall | Pylint — 98.8% | 97.0% *(−1.8 pp)* |
+The advantage isn't a PoisonPy artifact. Headline metric per dataset, all five tools side-by-side — F1 for paired datasets (where precision is measurable), recall for vulnerable-only:
 
-On Copilot and PromSec, Pylint's "flag almost everything" mode happens to nudge it above Redlyne on recall, but with a 49.7% accuracy on the paired benchmarks (effectively a random classifier — see PoisonPy and SafeCoder rows). What matters in production is F1 / accuracy on a paired dataset, and there Redlyne leads.
+| Dataset | n | Bandit | Semgrep | Pylint | DeVAIC v2 | **Redlyne** |
+|---|---|---|---|---|---|---|
+| PoisonPy *(paired, F1)* | 310 | 0.107 | 0.318 | 0.280 | 0.662 | **0.822** |
+| SafeCoder *(paired, F1)* — real OSS commit fixes | 1052 | 0.435 | 0.515 | 0.449 | 0.501 | **0.556** |
+| SecurityEval *(recall)* | 121 | 40.5% | 34.7% | 59.5% | 63.6% | **93.4%** |
+| Copilot CWE Scenarios *(recall)* | 150 | 84.7% | 51.3% | 93.3% | 68.0% | 89.3% |
+| PromSec *(recall)* | 600 | 92.8% | 87.0% | 98.8% | 85.2% | 97.0% |
+
+On Copilot and PromSec, Pylint's "flag almost everything" mode nudges it slightly above Redlyne on raw recall, but at the cost of a 49.7% accuracy on the paired benchmarks — effectively a random classifier on the only datasets where precision is measurable. What matters in production is F1 on paired data, and there Redlyne leads on both paired datasets.
 
 ### Auto-remediation head-to-head
 
-*Evaluated May 2026 on 155 PoisonPy vulnerable samples + 526 SafeCoder real commit-based fixes. Reproducible: `python tests/bench_remediation.py`.*
+*Evaluated May 2026 on 155 [PoisonPy](https://github.com/dessertlab/PoisonPy) vulnerable samples + 526 [SafeCoder](https://github.com/eth-sri/safecoder) real commit-based fixes. Reproducible: `python tests/bench_remediation.py`.*
+
+**Tools compared:** [Semgrep `--autofix`](https://semgrep.dev/docs/writing-rules/autofix) · [PatchitPy](https://github.com/dessertlab/PatchitPy) · Redlyne.
 
 Auto-remediation is the dimension where Redlyne has no real competition. Of the open-source Python tools we tested:
 
