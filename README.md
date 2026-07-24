@@ -62,7 +62,7 @@ Redlyne sits in your editor and flags vulnerability patterns the moment you sele
 | Metric | Value |
 |---|---|
 | **Recall** | **96.8%** |
-| **F1 score** | **0.822** |
+| **F1 score** | **82.2%** |
 | **Accuracy** | **79.0%** |
 | Precision | 71.4% |
 | Analyzed | 100% (310/310 files, no parse failures) |
